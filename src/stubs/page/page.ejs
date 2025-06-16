@@ -1,0 +1,34 @@
+<% if (createMetadata) { %>
+import { Metadata } from 'next/types'
+
+export const metadata: Metadata = {
+  title: '<%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ') %>',
+  description: 'Description for <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ') %> page',
+}
+
+<% } %>
+<% if (isDynamic) { %>
+interface <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>PageProps {
+  params: {
+    <%= dynamicParam %>: string
+  }
+}
+
+export default function <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Page({ params }: <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>PageProps) {
+  return (
+    <div className="container py-8">
+      <h1 className="text-3xl font-bold mb-6"><%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ') %></h1>
+      <p>Dynamic parameter: {params.<%= dynamicParam %>}</p>
+    </div>
+  )
+}
+<% } else { %>
+export default function <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Page() {
+  return (
+    <div className="container py-8">
+      <h1 className="text-3xl font-bold mb-6"><%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ') %></h1>
+      <p>This is the <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ') %> page</p>
+    </div>
+  )
+}
+<% } %>

@@ -1,0 +1,11 @@
+// Mock for <%= name %>
+
+export const <%= name.split('-').map(word => word.toLowerCase()).join('_') %> = jest.fn().mockImplementation(() => {
+  return {
+    // Mock implementation here
+    success: true,
+    data: {
+      // Mock data
+    }
+  }
+})

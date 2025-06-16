@@ -1,0 +1,20 @@
+import type { Meta, StoryObj } from '@storybook/react'
+import { <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %> } from './<%= name %>'
+
+const meta: Meta<typeof <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>> = {
+  title: 'Components/<%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>',
+  component: <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>,
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
+}
+
+export default meta
+type Story = StoryObj<typeof <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>>
+
+export const Default: Story = {
+  args: {
+    // Add your props here
+  },
+}

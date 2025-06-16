@@ -1,0 +1,248 @@
+import { NextRequest, NextResponse } from 'next/server'
+<% if (withValidation) { %>
+import { z } from 'zod'
+<% } %>
+<% if (withDb) { %>
+import { db } from '@/shared/db'
+<% } %>
+
+<% if (withValidation) { %>
+// Validation schemas
+<% if (methods.includes('POST')) { %>
+const createSchema = z.object({
+  // Define your validation schema here
+  name: z.string().min(1),
+  email: z.string().email(),
+})
+<% } %>
+<% if (methods.includes('PUT') || methods.includes('PATCH')) { %>
+const updateSchema = z.object({
+  // Define your validation schema here
+  name: z.string().min(1).optional(),
+  email: z.string().email().optional(),
+})
+<% } %>
+<% } %>
+
+<% if (methods.includes('GET')) { %>
+export async function GET(
+  request: NextRequest<% if (isDynamic) { %>,
+  { params }: { params: { <%= dynamicParam %>: string } }<% } %>
+) {
+  try {
+<% if (isDynamic) { %>
+    const <%= dynamicParam %> = params.<%= dynamicParam %>
+    
+<% } %>
+<% if (withDb) { %>
+    // Example database query
+    // const data = await db.query...
+    
+<% } %>
+    // Your GET logic here
+    
+    return NextResponse.json({
+      success: true,
+      data: {
+        // Your response data here
+<% if (isDynamic) { %>
+        <%= dynamicParam %>,
+<% } %>
+      }
+    })
+  } catch (error) {
+    console.error(`Error in GET <%= name %>:`, error)
+    return NextResponse.json(
+      { error: (error as Error).message || 'An unknown error occurred' },
+      { status: 500 }
+    )
+  }
+}
+<% } %>
+
+<% if (methods.includes('POST')) { %>
+export async function POST(
+  request: NextRequest<% if (isDynamic) { %>,
+  { params }: { params: { <%= dynamicParam %>: string } }<% } %>
+) {
+  try {
+<% if (isDynamic) { %>
+    const <%= dynamicParam %> = params.<%= dynamicParam %>
+    
+<% } %>
+    const body = await request.json()
+    
+<% if (withValidation) { %>
+    // Validate request body
+    const validationResult = createSchema.safeParse(body)
+    
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid request data', details: validationResult.error.format() },
+        { status: 400 }
+      )
+    }
+    
+    const validatedData = validationResult.data
+    
+<% } %>
+<% if (withDb) { %>
+    // Example database operation
+    // const result = await db.insert...
+    
+<% } %>
+    // Your POST logic here
+    
+    return NextResponse.json({
+      success: true,
+      data: {
+        // Your response data here
+<% if (isDynamic) { %>
+        <%= dynamicParam %>,
+<% } %>
+      }
+    }, { status: 201 })
+  } catch (error) {
+    console.error(`Error in POST <%= name %>:`, error)
+    return NextResponse.json(
+      { error: (error as Error).message || 'An unknown error occurred' },
+      { status: 500 }
+    )
+  }
+}
+<% } %>
+
+<% if (methods.includes('PUT')) { %>
+export async function PUT(
+  request: NextRequest<% if (isDynamic) { %>,
+  { params }: { params: { <%= dynamicParam %>: string } }<% } %>
+) {
+  try {
+<% if (isDynamic) { %>
+    const <%= dynamicParam %> = params.<%= dynamicParam %>
+    
+<% } %>
+    const body = await request.json()
+    
+<% if (withValidation) { %>
+    // Validate request body
+    const validationResult = updateSchema.safeParse(body)
+    
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid request data', details: validationResult.error.format() },
+        { status: 400 }
+      )
+    }
+    
+    const validatedData = validationResult.data
+    
+<% } %>
+<% if (withDb) { %>
+    // Example database operation
+    // const result = await db.update...
+    
+<% } %>
+    // Your PUT logic here
+    
+    return NextResponse.json({
+      success: true,
+      data: {
+        // Your response data here
+<% if (isDynamic) { %>
+        <%= dynamicParam %>,
+<% } %>
+      }
+    })
+  } catch (error) {
+    console.error(`Error in PUT <%= name %>:`, error)
+    return NextResponse.json(
+      { error: (error as Error).message || 'An unknown error occurred' },
+      { status: 500 }
+    )
+  }
+}
+<% } %>
+
+<% if (methods.includes('PATCH')) { %>
+export async function PATCH(
+  request: NextRequest<% if (isDynamic) { %>,
+  { params }: { params: { <%= dynamicParam %>: string } }<% } %>
+) {
+  try {
+<% if (isDynamic) { %>
+    const <%= dynamicParam %> = params.<%= dynamicParam %>
+    
+<% } %>
+    const body = await request.json()
+    
+<% if (withValidation) { %>
+    // Validate request body
+    const validationResult = updateSchema.safeParse(body)
+    
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid request data', details: validationResult.error.format() },
+        { status: 400 }
+      )
+    }
+    
+    const validatedData = validationResult.data
+    
+<% } %>
+<% if (withDb) { %>
+    // Example database operation
+    // const result = await db.update...
+    
+<% } %>
+    // Your PATCH logic here
+    
+    return NextResponse.json({
+      success: true,
+      data: {
+        // Your response data here
+<% if (isDynamic) { %>
+        <%= dynamicParam %>,
+<% } %>
+      }
+    })
+  } catch (error) {
+    console.error(`Error in PATCH <%= name %>:`, error)
+    return NextResponse.json(
+      { error: (error as Error).message || 'An unknown error occurred' },
+      { status: 500 }
+    )
+  }
+}
+<% } %>
+
+<% if (methods.includes('DELETE')) { %>
+export async function DELETE(
+  request: NextRequest<% if (isDynamic) { %>,
+  { params }: { params: { <%= dynamicParam %>: string } }<% } %>
+) {
+  try {
+<% if (isDynamic) { %>
+    const <%= dynamicParam %> = params.<%= dynamicParam %>
+    
+<% } %>
+<% if (withDb) { %>
+    // Example database operation
+    // const result = await db.delete...
+    
+<% } %>
+    // Your DELETE logic here
+    
+    return NextResponse.json({
+      success: true,
+      message: 'Resource deleted successfully'
+    })
+  } catch (error) {
+    console.error(`Error in DELETE <%= name %>:`, error)
+    return NextResponse.json(
+      { error: (error as Error).message || 'An unknown error occurred' },
+      { status: 500 }
+    )
+  }
+}
+<% } %>

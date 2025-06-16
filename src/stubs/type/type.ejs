@@ -1,0 +1,31 @@
+<% if (createInterface) { %>
+/**
+ * <%= interfaceName %> interface
+ */
+export interface <%= interfaceName %> {
+  id: string
+  // Add your properties here
+  createdAt: Date
+  updatedAt: Date
+}
+
+<% } %>
+<% if (createType) { %>
+/**
+ * <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Type type
+ */
+export type <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Type = {
+  // Add your type properties here
+}
+
+<% } %>
+<% if (createEnum) { %>
+/**
+ * <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Status enum
+ */
+export enum <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Status {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  PENDING = 'pending',
+}
+<% } %>

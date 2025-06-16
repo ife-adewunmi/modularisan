@@ -1,0 +1,48 @@
+<% if (isServerAction) { %>
+'use server'
+
+<% } %>
+<% if (withDb) { %>
+import { db } from '@/shared/db'
+<% } %>
+<% if (withTypes) { %>
+
+interface <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Result {
+  // Define your result type here
+  success: boolean
+  data?: any
+  error?: string
+}
+<% } %>
+
+/**
+ * <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>
+ * @description Service for handling <%= name %> operations
+ */
+<% if (withTypes) { %>
+export async function <%= name.split('-').map(word => word.toLowerCase()).join('_') %>(params: any): Promise<<%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Result> {
+<% } else { %>
+export async function <%= name.split('-').map(word => word.toLowerCase()).join('_') %>(params: any): Promise<any> {
+<% } %>
+  try {
+<% if (withDb) { %>
+    // Example database operation
+    // const result = await db.query...
+    
+<% } %>
+    // Your service logic here
+    
+    return {
+      success: true,
+      data: {
+        // Your data here
+      }
+    }
+  } catch (error) {
+    console.error(`Error in <%= name.split('-').map(word => word.toLowerCase()).join('_') %>:`, error)
+    return {
+      success: false,
+      error: (error as Error).message || 'An unknown error occurred'
+    }
+  }
+}

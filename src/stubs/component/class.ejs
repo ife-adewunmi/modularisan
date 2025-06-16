@@ -1,0 +1,34 @@
+<% if (isClientComponent) { %>
+'use client'
+
+<% } %>
+import React, { Component } from 'react'
+<% if (withProps) { %>
+
+interface <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Props {
+  // Define your props here
+}
+
+interface <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>State {
+  // Define your state here
+}
+<% } %>
+
+export class <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %> extends Component<% if (withProps) { %><<%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Props, <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>State><% } %> {
+<% if (withProps) { %>
+  constructor(props: <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Props) {
+    super(props)
+    this.state = {
+      // Initialize your state here
+    }
+  }
+<% } %>
+
+  render() {
+    return (
+      <div>
+        {/* Your component content here */}
+      </div>
+    )
+  }
+}

@@ -1,0 +1,26 @@
+import { renderHook, act } from '@testing-library/react-hooks'
+import { <%= name %> } from '../<%= name %>'
+
+describe('<%= name %>', () => {
+  it('should initialize with default values', () => {
+    // Arrange & Act
+    const { result } = renderHook(() => <%= name %>())
+    
+    // Assert
+    expect(result.current).toBeDefined()
+    // Add more specific assertions based on your hook
+  })
+
+  it('should update state when called', () => {
+    // Arrange
+    const { result } = renderHook(() => <%= name %>())
+    
+    // Act
+    act(() => {
+      // Call a method from your hook that updates state
+    })
+    
+    // Assert
+    // Add assertions based on the expected state changes
+  })
+})

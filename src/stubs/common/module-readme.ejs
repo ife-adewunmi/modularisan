@@ -1,0 +1,51 @@
+# <%= name %> Module
+
+<%= description ? description : 'Module for ' + name %>
+
+## Structure
+
+```
+<%= name %>/
+<% components.forEach(function(component) { %>├── <%= component %>/
+<% }); %>└── index.ts
+```
+
+## Components
+
+<% components.forEach(function(component) { %>- **<%= component %>**: <%= component.charAt(0).toUpperCase() + component.slice(1) %> related functionality
+<% }); %>
+## Usage
+
+```typescript
+import { } from './<%= name %>'
+```
+
+## Development
+
+### Adding Components
+
+```bash
+# Add a new component
+misan create:component component-name <%= name %>
+
+# Add a new service
+misan create:service service-name <%= name %>
+```
+
+### Testing
+
+```bash
+# Run tests for this module
+npm test -- <%= name %>
+```
+
+## Dependencies
+
+This module depends on:
+- Shared utilities from `../shared`
+- Common types and interfaces
+
+---
+
+Generated with [Modularisan](https://github.com/ife-adewunmi/modularisan)
+

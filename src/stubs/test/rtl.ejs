@@ -1,0 +1,34 @@
+import React from 'react'
+import { render, screen, fireEvent } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %> } from '../<%= name %>'
+
+<% if (withMocks) { %>
+// Mock dependencies
+jest.mock('../some-dependency', () => ({
+  someDependency: jest.fn(),
+}))
+<% } %>
+
+describe('<%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('renders correctly', () => {
+    render(<<%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %> />)
+    
+    // Add your assertions here
+    expect(screen.getByText(/some text/i)).toBeInTheDocument()
+  })
+
+  it('handles user interactions', async () => {
+    render(<<%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %> />)
+    
+    // Simulate user interaction
+    await userEvent.click(screen.getByRole('button'))
+    
+    // Assert the expected outcome
+    expect(screen.getByText(/result/i)).toBeInTheDocument()
+  })
+})

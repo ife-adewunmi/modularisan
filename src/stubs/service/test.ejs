@@ -1,0 +1,41 @@
+import { <%= name.split('-').map(word => word.toLowerCase()).join('_') %> } from '../<%= name %>'
+
+// Mock dependencies
+jest.mock('@/shared/db', () => ({
+  db: {
+    query: jest.fn(),
+  },
+}))
+
+describe('<%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('should return success result when operation succeeds', async () => {
+    // Arrange
+    const params = { /* your test params */ }
+    
+    // Act
+    const result = await <%= name.split('-').map(word => word.toLowerCase()).join('_') %>(params)
+    
+    // Assert
+    expect(result.success).toBe(true)
+  })
+
+  it('should return error result when operation fails', async () => {
+    // Arrange
+    const params = { /* your test params */ }
+    
+    // Mock a failure
+    jest.spyOn(console, 'error').mockImplementation(() => {})
+    // Mock your dependencies to throw an error
+    
+    // Act
+    const result = await <%= name.split('-').map(word => word.toLowerCase()).join('_') %>(params)
+    
+    // Assert
+    expect(result.success).toBe(false)
+    expect(result.error).toBeDefined()
+  })
+})

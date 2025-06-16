@@ -1,0 +1,117 @@
+<% if (isServer) { %>'use server'
+
+<% } %>/**
+ * <%= className %> Service
+<% if (description) { %> * 
+ * <%= description %>
+<% } %> */
+
+<% if (!isServer) { %>// Client-side service
+class <%= className %> {
+  private baseUrl: string
+
+  constructor(baseUrl = '/api') {
+    this.baseUrl = baseUrl
+  }
+
+  /**
+   * Example method - replace with your actual implementation
+   */
+  async getData(id: string) {
+    try {
+      const response = await fetch(`${this.baseUrl}/<%= name %>/${id}`)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      return await response.json()
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Example method - replace with your actual implementation
+   */
+  async createData(data: any) {
+    try {
+      const response = await fetch(`${this.baseUrl}/<%= name %>`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      return await response.json()
+    } catch (error) {
+      console.error('Error creating data:', error)
+      throw error
+    }
+  }
+}
+
+// Export singleton instance
+export const <%= toCamelCase(name) %>Service = new <%= className %>()
+export default <%= className %>
+<% } else { %>// Server-side service
+
+/**
+ * Example server action - replace with your actual implementation
+ */
+export async function get<%= className %>Data(id: string) {
+  // Your server-side logic here
+  console.log('Getting data for ID:', id)
+  
+  // Example implementation
+  return {
+    id,
+    data: 'Example data',
+    timestamp: new Date().toISOString()
+  }
+}
+
+/**
+ * Example server action - replace with your actual implementation
+ */
+export async function create<%= className %>Data(data: any) {
+  // Your server-side logic here
+  console.log('Creating data:', data)
+  
+  // Example implementation
+  return {
+    id: Date.now().toString(),
+    ...data,
+    createdAt: new Date().toISOString()
+  }
+}
+
+/**
+ * Example server action - replace with your actual implementation
+ */
+export async function update<%= className %>Data(id: string, data: any) {
+  // Your server-side logic here
+  console.log('Updating data for ID:', id, data)
+  
+  // Example implementation
+  return {
+    id,
+    ...data,
+    updatedAt: new Date().toISOString()
+  }
+}
+
+/**
+ * Example server action - replace with your actual implementation
+ */
+export async function delete<%= className %>Data(id: string) {
+  // Your server-side logic here
+  console.log('Deleting data for ID:', id)
+  
+  // Example implementation
+  return { success: true, deletedId: id }
+}
+<% } %>
+

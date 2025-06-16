@@ -1,0 +1,71 @@
+import { <% reactHooks.forEach((hook, index) => { %><%= hook %><%= index < reactHooks.length - 1 ? ', ' : '' %><% }) %> } from 'react'
+<% if (withTypes) { %>
+
+interface <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Options {
+  // Define your options here
+}
+
+interface <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Result {
+  // Define your result here
+}
+<% } %>
+
+/**
+ * <%= name %>
+ * @description Custom hook for...
+ */
+<% if (withTypes) { %>
+export function <%= name %>(options?: <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Options): <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Result {
+<% } else { %>
+export function <%= name %>(options?: any): any {
+<% } %>
+<% if (reactHooks.includes('useState')) { %>
+  const [state, setState] = useState<any>(null)
+<% } %>
+<% if (reactHooks.includes('useEffect')) { %>
+  
+  useEffect(() => {
+    // Your effect logic here
+    
+    return () => {
+      // Cleanup logic here
+    }
+  }, [])
+<% } %>
+<% if (reactHooks.includes('useCallback')) { %>
+  
+  const handleSomething = useCallback(() => {
+    // Your callback logic here
+  }, [])
+<% } %>
+<% if (reactHooks.includes('useMemo')) { %>
+  
+  const computedValue = useMemo(() => {
+    // Your memoization logic here
+    return null
+  }, [])
+<% } %>
+<% if (reactHooks.includes('useRef')) { %>
+  
+  const ref = useRef<any>(null)
+<% } %>
+  
+  // Your hook logic here
+  
+  return {
+<% if (reactHooks.includes('useState')) { %>
+    state,
+    setState,
+<% } %>
+<% if (reactHooks.includes('useCallback')) { %>
+    handleSomething,
+<% } %>
+<% if (reactHooks.includes('useMemo')) { %>
+    computedValue,
+<% } %>
+<% if (reactHooks.includes('useRef')) { %>
+    ref,
+<% } %>
+    // Return your values here
+  }
+}

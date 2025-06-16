@@ -1,0 +1,12 @@
+export default function <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Layout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <div className="<%= name %>-layout">
+      {/* Layout content for <%= name %> */}
+      {children}
+    </div>
+  )
+}

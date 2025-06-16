@@ -1,0 +1,51 @@
+<% if (testTarget === 'component') { %>
+import React from 'react'
+import { render, screen } from '@testing-library/react'
+import { <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %> } from '../<%= name %>'
+
+<% if (withMocks) { %>
+// Mock dependencies
+jest.mock('../some-dependency', () => ({
+  someDependency: jest.fn(),
+}))
+<% } %>
+
+describe('<%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('renders correctly', () => {
+    render(<<%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %> />)
+    
+    // Add your assertions here
+    expect(true).toBeTruthy()
+  })
+})
+<% } else { %>
+import { <%= name.split('-').map(word => word.toLowerCase()).join('_') %> } from '../<%= name %>'
+
+<% if (withMocks) { %>
+// Mock dependencies
+jest.mock('../some-dependency', () => ({
+  someDependency: jest.fn(),
+}))
+<% } %>
+
+describe('<%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('should work correctly', async () => {
+    // Arrange
+    const params = { /* your test params */ }
+    
+    // Act
+    const result = await <%= name.split('-').map(word => word.toLowerCase()).join('_') %>(params)
+    
+    // Assert
+    expect(result).toBeDefined()
+  })
+})
+<% } %>

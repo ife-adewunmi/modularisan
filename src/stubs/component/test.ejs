@@ -1,0 +1,12 @@
+import React from 'react'
+import { render, screen } from '@testing-library/react'
+import { <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %> } from '../<%= name %>'
+
+describe('<%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>', () => {
+  it('renders correctly', () => {
+    render(<<%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %> />)
+    
+    // Add your assertions here
+    expect(true).toBeTruthy()
+  })
+})

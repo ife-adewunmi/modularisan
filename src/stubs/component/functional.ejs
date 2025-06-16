@@ -1,0 +1,19 @@
+<% if (isClientComponent) { %>
+'use client'
+
+<% } %>
+import React from 'react'
+<% if (withProps) { %>
+
+interface <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Props {
+  // Define your props here
+}
+<% } %>
+
+export function <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %><% if (withProps) { %>(props: <%= name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Props)<% } %> {
+  return (
+    <div>
+      {/* Your component content here */}
+    </div>
+  )
+}

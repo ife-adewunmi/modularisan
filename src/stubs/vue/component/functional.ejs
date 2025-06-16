@@ -1,0 +1,32 @@
+<template>
+  <div class="<%= name %>">
+<% if (withProps) { %>    <slot />
+<% } else { %>    <!-- Your component content here -->
+<% } %>  </div>
+</template>
+
+<script setup<% if (framework.includes('TypeScript')) { %> lang="ts"<% } %>>
+<% if (withProps) { %>interface Props {
+  // Define your props here
+  class?: string
+}
+
+withDefaults(defineProps<Props>(), {
+  class: ''
+})
+<% } %>
+<% if (description) { %>/**
+ * <%= componentName %> component
+ * 
+ * <%= description %>
+ */
+<% } %>
+// Component logic here
+</script>
+
+<style scoped>
+.<%= name %> {
+  /* Component styles here */
+}
+</style>
+
