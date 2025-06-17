@@ -457,19 +457,19 @@ npm run lint
 
 ## 📋 Roadmap
 
-### v2.1 (Q2 2024)
+### v1.1 (Q3 2025)
 - [ ] AI-powered code generation
-- [ ] Advanced template customization
+- [ ] Advanced template customisation
 - [ ] Plugin system
 - [ ] More framework integrations
 
-### v2.2 (Q3 2024)
+### v1.2 (Q4 2025)
 - [ ] Visual module designer
 - [ ] Code analysis tools
-- [ ] Performance optimization suggestions
+- [ ] Performance optimisation suggestions
 - [ ] Team collaboration features
 
-### v3.0 (Q4 2024)
+### v2.0 (Q1 2026)
 - [ ] Multi-language support
 - [ ] Advanced AI features
 - [ ] Cloud integration
