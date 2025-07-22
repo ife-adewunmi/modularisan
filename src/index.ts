@@ -12,6 +12,15 @@ import { generateCommand } from './commands/generate'
 import { debugCommand } from './commands/debug'
 import { configCommand } from './commands/config'
 import { migrateCommand } from './commands/migrate'
+import { createApiCommand } from './commands/create-api'
+import { createTypeCommand } from './commands/create-type'
+import { createFeatureCommand } from './commands/create-feature'
+import { createTestCommand } from './commands/create-test'
+import { createHookCommand } from './commands/create-hook'
+import { createPageCommand } from './commands/create-page'
+import { aiAnalyzeCommand } from './commands/ai-analyze'
+import { aiDocsCommand } from './commands/ai-docs'
+import { aiArchitectCommand } from './commands/ai-architect'
 
 // Display banner
 console.log(chalk.cyan(figlet.textSync('Modularisan', { horizontalLayout: 'full' })))
@@ -32,6 +41,15 @@ listCommand(program)
 generateCommand(program)
 configCommand(program)
 migrateCommand(program)
+createApiCommand(program)
+createTypeCommand(program)
+createFeatureCommand(program)
+createTestCommand(program)
+createHookCommand(program)
+createPageCommand(program)
+aiAnalyzeCommand(program)
+aiDocsCommand(program)
+aiArchitectCommand(program)
 debugCommand(program)
 
 // Add help text
@@ -44,6 +62,9 @@ program.on('--help', () => {
   console.log('  $ misan create:service user-service user        # Create service in user module')
   console.log('  $ misan list modules                           # List all modules')
   console.log('  $ misan generate component --ai                # AI-assisted component generation')
+  console.log('  $ misan ai:analyze src/components/Button.tsx   # Analyze code with AI')
+  console.log('  $ misan ai:docs src/services/api.ts            # Generate documentation with AI')
+  console.log('  $ misan ai:architect "E-commerce platform"     # Get architecture suggestions')
   console.log('  $ misan config set features.standalone true    # Update configuration')
   console.log('  $ misan migrate from-nextisan                  # Migrate from legacy Nextisan')
   console.log('  $ misan debug                                  # Debug project setup')

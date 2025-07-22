@@ -491,5 +491,126 @@ export class ModuleService {
     }
     return DEFAULT_MODULE_COMPONENTS
   }
+
+  async createType(options: { name: string; moduleName: string; typeOptions: string[] }): Promise<void> {
+    const { name, moduleName, typeOptions } = options
+
+    // Validate type name
+    if (!validateName(name)) {
+      throw new Error('Invalid type name. Use kebab-case (e.g., user-types)')
+    }
+
+    // Find module path
+    const modulePath = await this.findModulePath(moduleName)
+    if (!modulePath) {
+      throw new Error(`Module '${moduleName}' not found`)
+    }
+
+    const typesDir = path.join(modulePath, 'types')
+    await ensureDirectoryExists(typesDir)
+
+    // Create type file
+    const templateData = {
+      name,
+      className: toPascalCase(name),
+      typeOptions,
+      framework: this.config.framework.name
+    }
+
+    const typeContent = await renderTemplate(
+      `type/type${this.config.conventions.file_extensions.service}`,
+      templateData
+    )
+
+    const fileName = `${name}${this.config.conventions.file_extensions.service}`
+    await fs.writeFile(path.join(typesDir, fileName), typeContent)
+
+    // Update types index
+    await this.updateTypesIndex(typesDir, name)
+
+    logSuccess(`Type '${name}' created in module '${moduleName}'`)
+  }
+
+  async createTest(options: { name: string; moduleName: string; testType: string }): Promise<void> {
+    const { name, moduleName, testType } = options
+
+    // Find module path
+    const modulePath = await this.findModulePath(moduleName)
+    if (!modulePath) {
+      throw new Error(`Module '${moduleName}' not found`)
+    }
+
+    const testsDir = path.join(modulePath, 'tests')
+    await ensureDirectoryExists(testsDir)
+
+    // Create test file
+    const templateData = {
+      name,
+      className: toPascalCase(name),
+      testType,
+      framework: this.config.framework.name
+    }
+
+    const testContent = await renderTemplate(
+      `test/${testType}${this.config.conventions.file_extensions.test}`,
+      templateData
+    )
+
+    const fileName = `${name}${this.config.conventions.file_extensions.test}`
+    await fs.writeFile(path.join(testsDir, fileName), testContent)
+
+    logSuccess(`Test '${name}' created in module '${moduleName}'`)
+  }
+
+  async createAPI(options: { name: string; moduleName: string; methods: string[]; withValidation: boolean }): Promise<void> {
+    const { name, moduleName, methods, withValidation } = options
+
+    // Validate API name
+    if (!validateName(name)) {
+      throw new Error('Invalid API name. Use kebab-case (e.g., user-api)')
+    }
+
+    // Find module path
+    const modulePath = await this.findModulePath(moduleName)
+    if (!modulePath) {
+      throw new Error(`Module '${moduleName}' not found`)
+    }
+
+    const apiDir = path.join(modulePath, 'api')
+    await ensureDirectoryExists(apiDir)
+
+    // Create API file
+    const templateData = {
+      name,
+      className: toPascalCase(name),
+      methods,
+      withValidation,
+      framework: this.config.framework.name
+    }
+
+    const apiContent = await renderTemplate(
+      `api/route${this.config.conventions.file_extensions.service}`,
+      templateData
+    )
+
+    const fileName = `${name}${this.config.conventions.file_extensions.service}`
+    await fs.writeFile(path.join(apiDir, fileName), apiContent)
+
+    logSuccess(`API '${name}' created in module '${moduleName}'`)
+  }
+
+  private async updateTypesIndex(typesDir: string, typeName: string): Promise<void> {
+    const indexPath = path.join(typesDir, 'index.ts')
+    const exportLine = `export * from './${typeName}'\n`
+    
+    if (await fs.pathExists(indexPath)) {
+      const content = await fs.readFile(indexPath, 'utf8')
+      if (!content.includes(exportLine)) {
+        await fs.appendFile(indexPath, exportLine)
+      }
+    } else {
+      await fs.writeFile(indexPath, exportLine)
+    }
+  }
 }
 

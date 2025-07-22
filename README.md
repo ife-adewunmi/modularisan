@@ -154,7 +154,7 @@ misan create:service auth-service auth
 misan create:service user-api user-management --server
 ```
 
-### AI-Powered Generation (Coming Soon)
+### AI-Powered Generation
 
 ```bash
 # Generate components with AI
@@ -162,6 +162,15 @@ misan generate component --ai --prompt="Create a responsive user card with avata
 
 # Generate complete modules
 misan generate module --ai --prompt="E-commerce shopping cart module"
+
+# Analyze existing code
+misan ai:analyze src/components/Button.tsx --metrics
+
+# Generate documentation
+misan ai:docs src/services/api.ts --format=markdown
+
+# Get architecture suggestions
+misan ai:architect "E-commerce platform with user auth" --create-modules
 ```
 
 ### Migration Tools
@@ -391,16 +400,16 @@ misan migrate from-create-react-app
    # Move files manually or use migration tools
    ```
 
-## 🤖 AI Integration (Roadmap)
+## 🤖 AI Integration
 
-### Planned Features
+### Available Features
 
-- **Intelligent Code Generation**: Describe what you want, get working code
-- **Code Analysis**: Analyze existing code and suggest improvements
-- **Architecture Recommendations**: Get suggestions for optimal module structure
-- **Documentation Generation**: Auto-generate documentation from code
+- **✅ Intelligent Code Generation**: Describe what you want, get working code
+- **✅ Code Analysis**: Analyze existing code and suggest improvements
+- **✅ Architecture Recommendations**: Get suggestions for optimal module structure
+- **✅ Documentation Generation**: Auto-generate documentation from code
 
-### Setup AI (When Available)
+### Setup AI
 
 ```bash
 # Enable AI features
@@ -410,6 +419,46 @@ misan config set ai.model gpt-4
 
 # Set API key (use environment variable in production)
 export OPENAI_API_KEY="your-api-key"
+```
+
+### AI Commands
+
+```bash
+# Code Analysis
+misan ai:analyze [file] --type=component --metrics --fix
+
+# Documentation Generation
+misan ai:docs [file] --format=markdown --output=docs/
+
+# Architecture Suggestions
+misan ai:architect [requirements] --interactive --create-modules
+
+# AI-Enhanced Generation
+misan generate component --ai
+misan generate service --ai
+misan generate module --ai
+```
+
+### Supported AI Providers
+
+- **OpenAI**: GPT-3.5, GPT-4 (recommended)
+- **Anthropic**: Claude (coming soon)
+- **Local Models**: Ollama integration (planned)
+
+### Example AI Workflows
+
+```bash
+# Analyze and improve existing code
+misan ai:analyze src/components/UserCard.tsx --fix --metrics
+
+# Generate architecture for new project
+misan ai:architect "Social media platform with real-time chat" --interactive
+
+# Create AI-generated component
+misan generate component --ai --prompt="Responsive pricing card with animations"
+
+# Generate comprehensive documentation
+misan ai:docs src/services/ --format=html --output=docs/api/
 ```
 
 ## 🛠 Development
@@ -458,22 +507,27 @@ npm run lint
 ## 📋 Roadmap
 
 ### v2.1 (Q2 2024)
-- [ ] AI-powered code generation
+- [x] AI-powered code generation
+- [x] Code analysis tools
+- [x] Architecture recommendations
+- [x] Documentation generation
 - [ ] Advanced template customization
 - [ ] Plugin system
 - [ ] More framework integrations
 
 ### v2.2 (Q3 2024)
 - [ ] Visual module designer
-- [ ] Code analysis tools
+- [ ] Real-time AI code suggestions
 - [ ] Performance optimization suggestions
 - [ ] Team collaboration features
+- [ ] Advanced AI providers (Claude, local models)
 
 ### v3.0 (Q4 2024)
 - [ ] Multi-language support
-- [ ] Advanced AI features
+- [ ] Advanced AI features (code refactoring, migration)
 - [ ] Cloud integration
 - [ ] Enterprise features
+- [ ] AI-powered project templates
 
 ## 🤝 Support
 

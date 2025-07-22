@@ -2,6 +2,7 @@ import type { Command } from 'commander'
 import inquirer from 'inquirer'
 import { ConfigManager } from '../core/config-manager'
 import { ModuleService } from '../core/module-service'
+import { AIService } from '../core/ai-service'
 import { logSuccess, logError, logInfo } from '../utils/logger'
 import { validateName } from '../utils/validators'
 import chalk from 'chalk'
@@ -200,27 +201,90 @@ async function generateAIComponent(config: any, options: any): Promise<void> {
       message: 'Target module:',
       when: () => !options.module,
       validate: (input) => input ? true : 'Module name is required'
+    },
+    {
+      type: 'checkbox',
+      name: 'features',
+      message: 'What features should this component have?',
+      choices: [
+        { name: 'Form handling', value: 'form' },
+        { name: 'Data fetching', value: 'data' },
+        { name: 'State management', value: 'state' },
+        { name: 'Animations', value: 'animations' },
+        { name: 'Responsive design', value: 'responsive' },
+        { name: 'Accessibility', value: 'a11y' },
+        { name: 'Error handling', value: 'error' },
+        { name: 'Loading states', value: 'loading' }
+      ]
     }
   ])
   
-  // Simulate AI processing
+  // Initialize AI service
+  const aiService = new AIService(config)
+  
+  if (!aiService.isEnabled()) {
+    logError('AI service is not enabled. Using template generation...')
+    const moduleService = new ModuleService(config)
+    await moduleService.createComponent({
+      name: options.name || answers.name,
+      moduleName: options.module || answers.module,
+      type: 'functional',
+      props: true,
+      client: config.framework.type !== 'backend',
+      test: config.features.testing
+    })
+    return
+  }
+  
+  // Generate component using AI
   console.log(chalk.cyan('\n🤖 AI is analyzing your requirements...'))
-  await new Promise(resolve => setTimeout(resolve, 2000))
   
-  console.log(chalk.green('✨ Generated component based on: "' + answers.description + '"'))
-  
-  // For now, fall back to template generation
-  logInfo('AI generation is in development. Using enhanced template...')
-  
-  const moduleService = new ModuleService(config)
-  await moduleService.createComponent({
-    name: options.name || answers.name,
-    moduleName: options.module || answers.module,
-    type: 'functional',
-    props: true,
-    client: config.framework.type !== 'backend',
-    test: config.features.testing
-  })
+  try {
+    const aiResponse = await aiService.generateComponent({
+      name: options.name || answers.name,
+      description: answers.description,
+      moduleName: options.module || answers.module,
+      features: answers.features
+    })
+    
+    console.log(chalk.green('✨ Component generated successfully!'))
+    console.log('\n' + chalk.cyan('Generated Code:'))
+    console.log(chalk.gray(aiResponse.code))
+    
+    console.log('\n' + chalk.cyan('AI Explanation:'))
+    console.log(aiResponse.explanation)
+    
+    if (aiResponse.suggestions.length > 0) {
+      console.log('\n' + chalk.cyan('Suggestions:'))
+      aiResponse.suggestions.forEach((suggestion, index) => {
+        console.log(`  ${index + 1}. ${suggestion}`)
+      })
+    }
+    
+    if (aiResponse.dependencies && aiResponse.dependencies.length > 0) {
+      console.log('\n' + chalk.cyan('Dependencies to install:'))
+      aiResponse.dependencies.forEach(dep => {
+        console.log(`  - ${dep}`)
+      })
+    }
+    
+    // TODO: Save the generated code to the file system
+    logInfo('Code generation completed. Manual file creation needed.')
+    
+  } catch (error) {
+    logError(`AI generation failed: ${(error as Error).message}`)
+    logInfo('Falling back to template generation...')
+    
+    const moduleService = new ModuleService(config)
+    await moduleService.createComponent({
+      name: options.name || answers.name,
+      moduleName: options.module || answers.module,
+      type: 'functional',
+      props: true,
+      client: config.framework.type !== 'backend',
+      test: config.features.testing
+    })
+  }
 }
 
 async function generateTemplateComponent(config: any, options: any): Promise<void> {
@@ -258,10 +322,6 @@ async function generateTemplateComponent(config: any, options: any): Promise<voi
 }
 
 async function generateService(config: any, options: any, useAI: boolean): Promise<void> {
-  if (useAI) {
-    logInfo('AI-powered service generation coming soon!')
-  }
-  
   const moduleService = new ModuleService(config)
   
   const answers = await inquirer.prompt([
@@ -282,9 +342,72 @@ async function generateService(config: any, options: any, useAI: boolean): Promi
       message: 'Target module:',
       when: () => !options.module,
       validate: (input) => input ? true : 'Module name is required'
+    },
+    {
+      type: 'input',
+      name: 'description',
+      message: 'Service description:',
+      when: () => useAI,
+      validate: (input) => input ? true : 'Description is required for AI generation'
+    },
+    {
+      type: 'checkbox',
+      name: 'methods',
+      message: 'What methods should this service have?',
+      choices: [
+        { name: 'Create (POST)', value: 'create' },
+        { name: 'Read (GET)', value: 'read' },
+        { name: 'Update (PUT)', value: 'update' },
+        { name: 'Delete (DELETE)', value: 'delete' },
+        { name: 'List/Search', value: 'list' },
+        { name: 'Validation', value: 'validate' }
+      ],
+      when: () => useAI
     }
   ])
   
+  if (useAI) {
+    const aiService = new AIService(config)
+    
+    if (!aiService.isEnabled()) {
+      logError('AI service is not enabled. Using template generation...')
+    } else {
+      try {
+        console.log(chalk.cyan('\n🤖 AI is generating your service...'))
+        
+        const aiResponse = await aiService.generateService({
+          name: options.name || answers.name,
+          description: answers.description,
+          moduleName: options.module || answers.module,
+          methods: answers.methods,
+          isServer: config.framework.type === 'backend'
+        })
+        
+        console.log(chalk.green('✨ Service generated successfully!'))
+        console.log('\n' + chalk.cyan('Generated Code:'))
+        console.log(chalk.gray(aiResponse.code))
+        
+        console.log('\n' + chalk.cyan('AI Explanation:'))
+        console.log(aiResponse.explanation)
+        
+        if (aiResponse.suggestions.length > 0) {
+          console.log('\n' + chalk.cyan('Suggestions:'))
+          aiResponse.suggestions.forEach((suggestion, index) => {
+            console.log(`  ${index + 1}. ${suggestion}`)
+          })
+        }
+        
+        // TODO: Save the generated code to the file system
+        logInfo('Code generation completed. Manual file creation needed.')
+        return
+      } catch (error) {
+        logError(`AI generation failed: ${(error as Error).message}`)
+        logInfo('Falling back to template generation...')
+      }
+    }
+  }
+  
+  // Fall back to template generation
   await moduleService.createService(
     options.module || answers.module,
     options.name || answers.name,
@@ -338,8 +461,44 @@ async function generateHook(config: any, options: any, useAI: boolean): Promise<
 async function generateType(config: any, options: any, useAI: boolean): Promise<void> {
   logInfo('Type/Interface generation...')
   
-  // This would create TypeScript interfaces and types
-  logInfo('Type generation is coming soon!')
+  const moduleService = new ModuleService(config)
+  
+  const answers = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'name',
+      message: 'Type name:',
+      when: () => !options.name,
+      validate: (input) => {
+        if (!input) return 'Type name is required'
+        if (!validateName(input)) return 'Invalid type name. Use kebab-case'
+        return true
+      }
+    },
+    {
+      type: 'input',
+      name: 'module',
+      message: 'Target module:',
+      when: () => !options.module,
+      validate: (input) => input ? true : 'Module name is required'
+    },
+    {
+      type: 'checkbox',
+      name: 'typeOptions',
+      message: 'What would you like to create?',
+      choices: [
+        { name: 'Interface', value: 'interface', checked: true },
+        { name: 'Type alias', value: 'type', checked: false },
+        { name: 'Enum', value: 'enum', checked: false }
+      ]
+    }
+  ])
+  
+  await moduleService.createType({
+    name: options.name || answers.name,
+    moduleName: options.module || answers.module,
+    typeOptions: answers.typeOptions || ['interface']
+  })
 }
 
 async function generateTest(config: any, options: any, useAI: boolean): Promise<void> {
@@ -350,8 +509,45 @@ async function generateTest(config: any, options: any, useAI: boolean): Promise<
     return
   }
   
-  // This would generate test files
-  logInfo('Test generation is coming soon!')
+  const moduleService = new ModuleService(config)
+  
+  const answers = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'name',
+      message: 'Test name:',
+      when: () => !options.name,
+      validate: (input) => {
+        if (!input) return 'Test name is required'
+        return true
+      }
+    },
+    {
+      type: 'input',
+      name: 'module',
+      message: 'Target module:',
+      when: () => !options.module,
+      validate: (input) => input ? true : 'Module name is required'
+    },
+    {
+      type: 'list',
+      name: 'testType',
+      message: 'Test type:',
+      choices: [
+        { name: 'Component test', value: 'component' },
+        { name: 'Service test', value: 'service' },
+        { name: 'Hook test', value: 'hook' },
+        { name: 'Integration test', value: 'integration' },
+        { name: 'Unit test', value: 'unit' }
+      ]
+    }
+  ])
+  
+  await moduleService.createTest({
+    name: options.name || answers.name,
+    moduleName: options.module || answers.module,
+    testType: answers.testType
+  })
 }
 
 async function generateAPI(config: any, options: any, useAI: boolean): Promise<void> {
@@ -362,8 +558,53 @@ async function generateAPI(config: any, options: any, useAI: boolean): Promise<v
     return
   }
   
-  // This would generate API endpoints
-  logInfo('API generation is coming soon!')
+  const moduleService = new ModuleService(config)
+  
+  const answers = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'name',
+      message: 'API endpoint name:',
+      when: () => !options.name,
+      validate: (input) => {
+        if (!input) return 'API endpoint name is required'
+        if (!validateName(input)) return 'Invalid API name. Use kebab-case'
+        return true
+      }
+    },
+    {
+      type: 'input',
+      name: 'module',
+      message: 'Target module:',
+      when: () => !options.module,
+      validate: (input) => input ? true : 'Module name is required'
+    },
+    {
+      type: 'checkbox',
+      name: 'methods',
+      message: 'HTTP methods to support:',
+      choices: [
+        { name: 'GET', value: 'get', checked: true },
+        { name: 'POST', value: 'post', checked: false },
+        { name: 'PUT', value: 'put', checked: false },
+        { name: 'DELETE', value: 'delete', checked: false },
+        { name: 'PATCH', value: 'patch', checked: false }
+      ]
+    },
+    {
+      type: 'confirm',
+      name: 'withValidation',
+      message: 'Include input validation?',
+      default: true
+    }
+  ])
+  
+  await moduleService.createAPI({
+    name: options.name || answers.name,
+    moduleName: options.module || answers.module,
+    methods: answers.methods,
+    withValidation: answers.withValidation
+  })
 }
 
 async function generateCustom(config: any, options: any): Promise<void> {

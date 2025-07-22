@@ -7,6 +7,7 @@ import { logInfo, logError, logSuccess } from '../utils/logger'
 export interface ModularisanConfig {
   version: string
   framework: {
+    features: any
     name: string
     type: 'frontend' | 'backend' | 'fullstack'
     version?: string
@@ -97,7 +98,8 @@ export class ConfigManager {
       framework: {
         name: framework.name,
         type: framework.type,
-        version: framework.version
+        version: framework.version,
+        features: framework.features
       },
       project: {
         name: projectName,

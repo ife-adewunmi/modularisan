@@ -59,7 +59,18 @@ export function createModuleCommand(program: Command): void {
         }
 
         // Interactive configuration if not using --yes flag
-        let moduleOptions = {
+        let moduleOptions: {
+          name: string
+          description?: string
+          path?: string
+          template: string
+          routing?: boolean
+          api?: boolean
+          tests: boolean
+          standalone?: boolean
+          packageJson?: boolean
+          components?: string[]
+        } = {
           name,
           description: options.description,
           path: options.path,
@@ -138,7 +149,7 @@ export function createModuleCommand(program: Command): void {
             api: answers.features.includes('api'),
             tests: answers.features.includes('tests'),
             standalone: answers.features.includes('standalone'),
-            components: options.components ? options.components.split(',').map(s => s.trim()) : answers.customComponents
+            components: options.components ? options.components.split(',').map((s: string) => s.trim()) : answers.customComponents
           }
         }
 
