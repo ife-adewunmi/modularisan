@@ -5,6 +5,7 @@ import { renderTemplate } from '../utils/template'
 import { ensureDirectoryExists } from '../utils/file'
 import { logInfo, logError, logSuccess } from '../utils/logger'
 import { validateName, toPascalCase, toCamelCase, toKebabCase } from '../utils/validators'
+import { DEFAULT_MODULE_COMPONENTS, MODULE_TEMPLATES } from '../utils/types'
 
 export interface ModuleStructure {
   name: string
@@ -40,20 +41,20 @@ export interface CreateComponentOptions {
   test?: boolean
 }
 
-const DEFAULT_MODULE_COMPONENTS = [
-  'components',
-  'services', 
-  'types',
-  'hooks',
-  'utils'
-]
+// const DEFAULT_MODULE_COMPONENTS = [
+//   'components',
+//   'services', 
+//   'types',
+//   'hooks',
+//   'utils'
+// ]
 
-const MODULE_TEMPLATES = {
-  basic: ['components', 'services', 'types'],
-  full: ['components', 'services', 'types', 'hooks', 'utils', 'tests'],
-  api: ['services', 'types', 'controllers', 'middleware'],
-  ui: ['components', 'hooks', 'types', 'styles']
-}
+// const MODULE_TEMPLATES = {
+//   basic: ['components', 'services', 'types'],
+//   full: ['components', 'services', 'types', 'hooks', 'utils', 'tests'],
+//   api: ['services', 'types', 'controllers', 'middleware'],
+//   ui: ['components', 'hooks', 'types', 'styles']
+// }
 
 export class ModuleService {
   private config: ModularisanConfig

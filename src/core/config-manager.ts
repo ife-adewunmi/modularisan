@@ -3,6 +3,7 @@ import path from 'path'
 import yaml from 'yaml'
 import { ProjectStructure, FrameworkConfig } from './framework-detector'
 import { logInfo, logError, logSuccess } from '../utils/logger'
+import { PackageManager } from '../utils/types'
 
 export interface ModularisanConfig {
   version: string
@@ -16,7 +17,7 @@ export interface ModularisanConfig {
     name: string
     description?: string
     rootDir: string
-    packageManager: 'npm' | 'yarn' | 'pnpm'
+    packageManager: PackageManager
   }
   paths: {
     modules: string
@@ -65,7 +66,7 @@ const DEFAULT_CONFIG: Partial<ModularisanConfig> = {
   }
 }
 
-const CONFIG_FILE_NAME = 'modularisan.config.yml'
+const CONFIG_FILE_NAMES = ['modularisan.config.yml', 'modularisan.config.json', 'misan.config.yml', 'misan.config.json']
 const LEGACY_CONFIG_NAMES = ['nextisan.config.yml', 'nextisan.config.json']
 
 export class ConfigManager {
@@ -75,7 +76,22 @@ export class ConfigManager {
 
   constructor(rootDir: string = process.cwd()) {
     this.rootDir = rootDir
-    this.configPath = path.join(rootDir, CONFIG_FILE_NAME)
+    this.configPath = getConfigFileName.call(this)
+
+    function getConfigFileName(this: ConfigManager): string {
+      const configFileName = this.getConfigFileName()
+      return path.join(this.rootDir, configFileName)
+    }
+  }
+
+  private getConfigFileName(): string {
+    for (const configName of CONFIG_FILE_NAMES) {
+      const configPath = path.join(this.rootDir, configName)
+      if (fs.existsSync(configPath)) {
+        return configName
+      }
+    }
+    return CONFIG_FILE_NAMES[0]
   }
 
   async initializeConfig(projectStructure: ProjectStructure, options: Partial<ModularisanConfig> = {}): Promise<ModularisanConfig> {
@@ -158,7 +174,7 @@ export class ConfigManager {
     for (const legacyName of LEGACY_CONFIG_NAMES) {
       const legacyPath = path.join(this.rootDir, legacyName)
       if (await fs.pathExists(legacyPath)) {
-        logInfo(`Found legacy config file: ${legacyName}. Consider migrating to ${CONFIG_FILE_NAME}`)
+        logInfo(`Found legacy config file: ${legacyName}. Consider migrating to ${CONFIG_FILE_NAMES[0]}`)
         try {
           const configContent = await fs.readFile(legacyPath, 'utf8')
           this.config = legacyName.endsWith('.json') 
@@ -168,7 +184,7 @@ export class ConfigManager {
           // Migrate to new format
           await this.saveConfig(this.config!)
           await fs.remove(legacyPath)
-          logSuccess(`Migrated configuration from ${legacyName} to ${CONFIG_FILE_NAME}`)
+          logSuccess(`Migrated configuration from ${legacyName} to ${CONFIG_FILE_NAMES[0]}`)
           
           return this.config!
         } catch (error) {
@@ -191,7 +207,7 @@ export class ConfigManager {
       
       await fs.writeFile(this.configPath, yamlContent, 'utf8')
       this.config = config
-      logInfo(`Configuration saved to ${CONFIG_FILE_NAME}`)
+      logInfo(`Configuration saved to ${CONFIG_FILE_NAMES[0]}`)
     } catch (error) {
       logError(`Failed to save configuration: ${(error as Error).message}`)
       throw error

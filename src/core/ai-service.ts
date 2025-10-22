@@ -3,6 +3,7 @@ import { logError, logInfo, logSuccess } from '../utils/logger'
 import { OpenAIProvider } from '../providers/openai-provider'
 import { AnthropicProvider } from '../providers/anthropic-provider'
 import { validateName } from '../utils/validators'
+import { Levels } from '../utils/types'
 
 export interface AIProvider {
   name: string
@@ -42,15 +43,15 @@ export interface AIIssue {
   type: 'error' | 'warning' | 'suggestion'
   message: string
   line?: number
-  severity: 'low' | 'medium' | 'high'
+  severity: Levels
   fixSuggestion?: string
 }
 
 export interface AISuggestion {
   type: 'performance' | 'security' | 'maintainability' | 'architecture'
   message: string
-  impact: 'low' | 'medium' | 'high'
-  effort: 'low' | 'medium' | 'high'
+  impact: Levels
+  effort: Levels
   code?: string
 }
 

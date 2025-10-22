@@ -1,6 +1,7 @@
 import fs from 'fs-extra'
 import path from 'path'
 import { logInfo, logError } from '../utils/logger'
+import { PackageManager } from '../utils/types'
 
 export interface FrameworkConfig {
   name: string
@@ -35,7 +36,7 @@ export interface ProjectStructure {
   framework: FrameworkConfig
   hasTypeScript: boolean
   hasTesting: boolean
-  packageManager: 'npm' | 'yarn' | 'pnpm'
+  packageManager: PackageManager
   rootDir: string
 }
 
@@ -290,7 +291,7 @@ export class FrameworkDetector {
     const hasTesting = !!(dependencies.jest || dependencies.vitest || dependencies['@testing-library/react'])
     
     // Detect package manager
-    let packageManager: 'npm' | 'yarn' | 'pnpm' = 'npm'
+    let packageManager: PackageManager = 'npm'
     if (await fs.pathExists(path.join(this.rootDir, 'yarn.lock'))) {
       packageManager = 'yarn'
     } else if (await fs.pathExists(path.join(this.rootDir, 'pnpm-lock.yaml'))) {
