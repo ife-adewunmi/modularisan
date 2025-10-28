@@ -1,30 +1,53 @@
 {
   "name": "modularisan",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "description": "A framework-agnostic CLI tool for generating modular, scalable code structures inspired by Laravel modules. Supports Next.js, Nuxt.js, Nest.js, and more.",
-  "main": "dist/index.js",
-  "bin": {
-    "modularisan": "dist/index.js",
-    "misan": "dist/index.js"
-  },
   "scripts": {
-    "build": "tsc && npm run copy-stubs",
-    "copy-stubs": "cp -r src/stubs dist/",
-    "dev": "ts-node src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix",
-    "prepublishOnly": "npm run build",
+    "build": "tsc && npm run copy-stubs",
+    "build:check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,json,md}\"",
+    "typecheck": "tsc --noEmit",
+    "validate": "npm run lint && npm run typecheck && npm run test",
+    "prepublishOnly": "npm run validate && npm run build",
     "publish": "npm publish --access public",
+    "preversion": "npm run validate",
+    "version": "npm run format && git add -A",
+    "postversion": "git push && git push --tags",
+    "release": "standard-version",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major",
+    "clean": "rimraf dist coverage .turbo",
+    "copy-stubs": "cp -r src/stubs dist/",
     "check-stubs": "ts-node scripts/check-stubs.ts",
     "init:config": "ts-node src/commands/init.ts"
   },
   "keywords": [
-    "cli", "generator", "scaffold", "modular", "ddd", "feature-driven",
-    "next.js", "nuxt.js", "nest.js", "react", "vue", "svelte", "angular",
-    "laravel-modules", "architecture", "microservices", "monorepo"
+    "cli",
+    "generator",
+    "scaffold",
+    "modular",
+    "ddd",
+    "feature-driven",
+    "next.js",
+    "nuxt.js",
+    "nest.js",
+    "react",
+    "vue",
+    "svelte",
+    "angular",
+    "laravel-modules",
+    "architecture",
+    "microservices",
+    "monorepo"
   ],
   "author": "Ifeoluwa Adewunmi (https://github.com/ife-adewunmi)",
   "license": "MIT",
@@ -33,40 +56,83 @@
     "url": "https://github.com/ife-adewunmi/modularisan.git"
   },
   "bugs": {
-    "url": "https://github.com/ife-adewunmi/modularisan/issues"
+    "url": "https://github.com/ife-adewunmi/modularisan/issues",
+    "email": "support@modularisan.dev"
   },
   "homepage": "https://github.com/ife-adewunmi/modularisan#readme",
+  "bin": {
+    "modularisan": "./dist/index.js",
+    "misan": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "templates",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.67.0",
     "chalk": "^4.1.2",
-    "commander": "^11.1.0",
+    "commander": "^12.0.0",
+    "cosmiconfig": "^9.0.0",
     "ejs": "^3.1.9",
+    "enquirer": "^2.4.1",
+    "execa": "^8.0.1",
+    "fast-glob": "^3.3.2",
     "figlet": "^1.7.0",
     "fs-extra": "^11.2.0",
     "glob": "^10.3.10",
     "inquirer": "^8.2.6",
+    "openai": "^6.7.0",
     "ora": "^5.4.1",
     "pluralize": "^8.0.0",
     "semver": "^7.5.4",
-    "yaml": "^2.3.4"
+    "yaml": "^2.3.4",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/ejs": "^3.1.5",
     "@types/figlet": "^1.5.8",
     "@types/fs-extra": "^11.0.4",
-    "@types/inquirer": "^8.2.10",
+    "@types/inquirer": "^9.0.9",
     "@types/jest": "^29.5.11",
-    "@types/node": "^20.10.5",
+    "@types/node": "^24.9.1",
     "@types/pluralize": "^0.0.33",
     "@types/semver": "^7.5.6",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
+    "@types/yaml": "^1.9.7",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "@vitest/coverage-v8": "^1.2.0",
+    "@vitest/ui": "^1.2.0",
     "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
     "jest": "^29.7.0",
+    "prettier": "^3.2.4",
+    "rimraf": "^5.0.5",
+    "standard-version": "^9.5.0",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "tsup": "^8.0.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5.8.0",
+    "vitest": "^1.2.0"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }

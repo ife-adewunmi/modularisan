@@ -1,16 +1,29 @@
-# Source
+# Source files
 src/
+*.ts
+!*.d.ts
+
+# Tests
+**/*.test.ts
+**/*.spec.ts
 __tests__/
+test/
 coverage/
-.github/
-.vscode/
+.nyc_output/
 
 # Config files
 tsconfig.json
 jest.config.js
 .eslintrc.js
+.eslintrc.json
 .prettierrc
+.prettierrc.json
 .gitignore
+vitest.config.ts
+tsup.config.ts
+
+# Scripts
+scripts/
 
 # Logs
 logs/
@@ -18,20 +31,36 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+.cache/
+.turbo/
 
 # Environment
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
+*.pem
+
+# Documentation (keep only essential)
+docs/
+examples/
+.husky/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Build info
+*.tsbuildinfo
