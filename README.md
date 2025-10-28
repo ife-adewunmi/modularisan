@@ -506,7 +506,7 @@ npm run lint
 
 ## 📋 Roadmap
 
-### v2.1 (Q2 2024)
+### v1.1 (Q2 2024)
 - [x] AI-powered code generation
 - [x] Code analysis tools
 - [x] Architecture recommendations
@@ -515,14 +515,15 @@ npm run lint
 - [ ] Plugin system
 - [ ] More framework integrations
 
-### v2.2 (Q3 2024)
+### v1.2 (Q4 2025)
 - [ ] Visual module designer
 - [ ] Real-time AI code suggestions
-- [ ] Performance optimization suggestions
+- [ ] Code analysis tools
+- [ ] Performance optimisation suggestions
 - [ ] Team collaboration features
 - [ ] Advanced AI providers (Claude, local models)
 
-### v3.0 (Q4 2024)
+### v2.0 (Q1 2026)
 - [ ] Multi-language support
 - [ ] Advanced AI features (code refactoring, migration)
 - [ ] Cloud integration
