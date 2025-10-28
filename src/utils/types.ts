@@ -1,18 +1,18 @@
-export type Levels = 'low' | 'medium' | 'high'
+export type Levels = 'low' | 'medium' | 'high';
 
-export type PackageManager = 'npm' | 'yarn' | 'pnpm'
+export type PackageManager = 'npm' | 'yarn' | 'pnpm';
 
 export const DEFAULT_MODULE_COMPONENTS = [
   'components',
-  'services', 
+  'services',
   'types',
   'hooks',
-  'utils'
-]
+  'utils',
+];
 
 export const MODULE_TEMPLATES = {
   basic: ['components', 'services', 'types'],
   full: ['components', 'services', 'types', 'hooks', 'utils', 'tests'],
   api: ['services', 'types', 'controllers', 'middleware'],
-  ui: ['components', 'hooks', 'types', 'styles']
-}
+  ui: ['components', 'hooks', 'types', 'styles'],
+};
