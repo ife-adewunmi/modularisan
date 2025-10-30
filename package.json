@@ -1,6 +1,6 @@
 {
   "name": "modularisan",
-  "version": "1.0.1-beta.2",
+  "version": "1.0.0",
   "type": "module",
   "description": "A framework-agnostic CLI tool for generating modular, scalable code structures inspired by Laravel modules. Supports Next.js, Nuxt.js, Nest.js, and more.",
   "scripts": {
@@ -12,8 +12,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
-    "lint": "eslint src --ext .ts,.tsx",
-    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "lint": "eslint src --ext .ts,.tsx --config .eslintrc.cjs",
+    "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,json,md}\"",
     "typecheck": "tsc --noEmit",
