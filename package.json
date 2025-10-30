@@ -1,11 +1,12 @@
 {
   "name": "modularisan",
-  "version": "1.0.0",
+  "version": "1.0.1-beta.2",
+  "type": "module",
   "description": "A framework-agnostic CLI tool for generating modular, scalable code structures inspired by Laravel modules. Supports Next.js, Nuxt.js, Nest.js, and more.",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "build": "tsc && npm run copy-stubs",
+    "build": "tsc && tsc-alias && npm run copy-stubs",
     "build:check": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -126,6 +127,7 @@
     "standard-version": "^9.5.0",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "tsup": "^8.0.1",
     "tsx": "^4.7.0",
     "typescript": "^5.8.0",

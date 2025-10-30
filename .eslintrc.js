@@ -7,7 +7,14 @@ module.exports = {
     ecmaVersion: 2020,
     sourceType: 'module',
   },
-  ignorePatterns: ['**/__tests__/**', '*.test.ts', '*.test.tsx'],
+  ignorePatterns: [
+    '**/__tests__/**', 
+    '*.test.ts', 
+    '*.test.tsx',
+    'dist/**',
+    'node_modules/**',
+    '*.js' // Ignore compiled JS files
+  ],
   plugins: [
     '@typescript-eslint',
     'import'
@@ -27,30 +34,57 @@ module.exports = {
     '@typescript-eslint/no-unsafe-call': 'warn',
     '@typescript-eslint/no-unsafe-return': 'warn',
     '@typescript-eslint/no-unsafe-argument': 'warn',
-    '@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_', 'varsIgnorePattern': '^_', 'caughtErrors': 'none' }],
+    '@typescript-eslint/no-unused-vars': [
+      'error', 
+      { 
+        'argsIgnorePattern': '^_', 
+        'varsIgnorePattern': '^_', 
+        'caughtErrors': 'none' 
+      }
+    ],
     '@typescript-eslint/require-await': 'warn',
-    '@typescript-eslint/no-require-imports': 'warn',
+    '@typescript-eslint/no-require-imports': 'error',
     'import/no-unresolved': 'error',
-    'import/order': ['error', {
-      'groups': [
-        'builtin',
-        'external',
-        'internal',
-        'parent',
-        'sibling',
-        'index'
-      ],
-      'newlines-between': 'always'
-    }],
+    'import/namespace': 'off', // Disable namespace checking
+    'import/default': 'error',
+    'import/no-named-as-default-member': 'off', // Disable this rule
+    'import/order': [
+      'error', 
+      {
+        'groups': [
+          'builtin',
+          'external',
+          'internal',
+          'parent',
+          'sibling',
+          'index'
+        ],
+        'newlines-between': 'always',
+        'alphabetize': {
+          'order': 'asc',
+          'caseInsensitive': true
+        }
+      }
+    ],
   },
   settings: {
     'import/resolver': {
       typescript: {
         alwaysTryTypes: true,
+        project: './tsconfig.json',
       },
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx']
       }
     }
-  }
+  },
+  overrides: [
+    {
+      files: ['**/*.js'],
+      rules: {
+        '@typescript-eslint/no-unsafe-*': 'off',
+        '@typescript-eslint/no-require-imports': 'off',
+      }
+    }
+  ]
 };

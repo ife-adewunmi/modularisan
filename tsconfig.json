@@ -22,7 +22,6 @@
     "noUncheckedIndexedAccess": true,
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
-    "verbatimModuleSyntax": true,
     "paths": {
       "@/*": ["./src/*"],
       "@/commands/*": ["./src/commands/*"],
