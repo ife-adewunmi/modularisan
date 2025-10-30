@@ -8,7 +8,7 @@ import fs from 'fs-extra';
 export async function ensureDirectoryExists(dirPath: string): Promise<void> {
   try {
     await fs.ensureDir(dirPath);
-  } catch (_error) {
+  } catch (_error: unknown) {
     throw new Error(`Failed to create directory: ${dirPath}`);
   }
 }
@@ -19,7 +19,7 @@ export async function ensureDirectoryExists(dirPath: string): Promise<void> {
 export async function fileExists(filePath: string): Promise<boolean> {
   try {
     return await fs.pathExists(filePath);
-  } catch (_error) {
+  } catch (_error: unknown) {
     return false;
   }
 }

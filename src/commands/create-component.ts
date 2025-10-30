@@ -30,7 +30,7 @@ export function createComponentCommand(program: Command): void {
 
         try {
           config = await configManager.loadConfig();
-        } catch (error) {
+        } catch (_error) {
           logError('No configuration found. Please run "misan init" first.');
           return;
         }

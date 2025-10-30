@@ -2,7 +2,6 @@ import OpenAI from 'openai';
 
 import { AIProviderError } from '@/utils/errors';
 import { logInfo, logDebug } from '@/utils/logger';
-
 import type {
   AIProvider,
   AIContext,

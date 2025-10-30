@@ -9,6 +9,14 @@ import { AIService } from '@/core/ai-service';
 import { ConfigManager } from '@/core/config-manager';
 import { logSuccess, logError, logInfo } from '@/utils/logger';
 
+interface AIDocsOptions {
+  type?: string;
+  output?: string;
+  format?: string;
+  overwrite?: boolean;
+  preview?: boolean;
+}
+
 export function aiDocsCommand(program: Command): void {
   program
     .command('ai:docs [file]')
@@ -22,7 +30,7 @@ export function aiDocsCommand(program: Command): void {
     )
     .option('--overwrite', 'Overwrite existing documentation')
     .option('--preview', 'Preview documentation without saving')
-    .action(async (file, options) => {
+    .action(async (file: string, options: AIDocsOptions) => {
       try {
         // Load configuration
         const configManager = new ConfigManager();
@@ -55,8 +63,8 @@ export function aiDocsCommand(program: Command): void {
           return;
         }
 
-        let targetFile = file;
-        let codeType = options.type;
+        let targetFile: string = file;
+        let codeType: string = options.type as string;
 
         // Interactive file selection if not provided
         if (!targetFile) {
@@ -65,14 +73,14 @@ export function aiDocsCommand(program: Command): void {
               type: 'input',
               name: 'selectedFile',
               message: 'Enter the path to the file you want to document:',
-              validate: (input) => {
+              validate: async (input) => {
                 if (!input) return 'File path is required';
-                if (!fs.existsSync(input)) return 'File does not exist';
+                if (!(await fs.pathExists(input as string))) return 'File does not exist';
                 return true;
               },
             },
           ]);
-          targetFile = selectedFile;
+          targetFile = selectedFile as string;
         }
 
         // Auto-detect code type if not provided
@@ -108,7 +116,7 @@ export function aiDocsCommand(program: Command): void {
                 ],
               },
             ]);
-            codeType = detectedType;
+            codeType = detectedType as string;
           }
         }
 
@@ -135,7 +143,7 @@ export function aiDocsCommand(program: Command): void {
         }
 
         // Determine output file path
-        let outputPath = options.output;
+        let outputPath = options.output as string;
         if (!outputPath) {
           const fileDir = path.dirname(targetFile);
           const fileName = path.basename(targetFile, path.extname(targetFile));
@@ -166,7 +174,7 @@ export function aiDocsCommand(program: Command): void {
         }
 
         // Format and save documentation
-        let formattedDocs = documentation;
+        let formattedDocs: string = documentation;
 
         if (options.format === 'json') {
           formattedDocs = JSON.stringify(
