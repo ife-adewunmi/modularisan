@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import type { Command } from 'commander';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
+import * as yaml from 'yaml';
 
 import { ConfigManager } from '../core/config-manager';
 import { FrameworkDetector } from '../core/framework-detector';
@@ -73,7 +74,7 @@ async function migrateFromNextisan(
         const content = await fs.readFile(configPath, 'utf8');
         legacyConfig = configFile.endsWith('.json')
           ? JSON.parse(content)
-          : require('yaml').parse(content);
+          : yaml.parse(content);
         break;
       } catch (error) {
         logError(`Failed to parse legacy config: ${configFile}`);

@@ -1,7 +1,5 @@
 import OpenAI from 'openai';
 
-import { AIProviderError } from '@/utils/errors';
-import { logInfo, logDebug } from '@/utils/logger';
 import type {
   AIProvider,
   AIContext,
@@ -9,6 +7,8 @@ import type {
   AIAnalysis,
   AIArchitectureSuggestion,
 } from '@/core/ai-service';
+import { AIProviderError } from '@/utils/errors';
+import { logInfo, logDebug } from '@/utils/logger';
 
 interface OpenAIConfig {
   apiKey?: string;

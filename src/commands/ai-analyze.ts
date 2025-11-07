@@ -1,14 +1,14 @@
 import * as path from 'path';
 
 import * as chalk from 'chalk';
+import type { Command } from 'commander';
 import { existsSync, readFile } from 'fs-extra';
 import inquirer from 'inquirer';
-import type { Command } from 'commander';
 
 import { AIService } from '@/core/ai-service';
 import { ConfigManager } from '@/core/config-manager';
-import { logSuccess, logError, logInfo } from '@/utils/logger';
 import type { AiAnalyzeOptions } from '@/types/commands';
+import { logSuccess, logError, logInfo } from '@/utils/logger';
 
 interface FileSelectionAnswers {
   selectedFile: string;

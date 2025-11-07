@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
-import * as fs from 'fs-extra';
 import type { Command } from 'commander';
+import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
 
 import { AIService } from '@/core/ai-service';

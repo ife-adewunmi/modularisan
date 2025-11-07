@@ -3,9 +3,9 @@ import type { Command } from 'commander';
 import inquirer from 'inquirer';
 
 import { ConfigManager } from '@/core/config-manager';
-import { logSuccess, logError, logInfo } from '@/utils/logger';
-import { ConfigurationError } from '@/utils/errors';
 import type { ConfigOptions } from '@/types/commands';
+import { ConfigurationError } from '@/utils/errors';
+import { logSuccess, logError, logInfo } from '@/utils/logger';
 
 interface SetConfigAnswers {
   key: string;

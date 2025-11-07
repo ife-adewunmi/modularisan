@@ -1,9 +1,9 @@
 import * as path from 'path';
 
 import * as chalk from 'chalk';
+import type { Command } from 'commander';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
-import type { Command } from 'commander';
 
 import { AIService } from '@/core/ai-service';
 import { ConfigManager } from '@/core/config-manager';
@@ -75,7 +75,8 @@ export function aiDocsCommand(program: Command): void {
               message: 'Enter the path to the file you want to document:',
               validate: async (input) => {
                 if (!input) return 'File path is required';
-                if (!(await fs.pathExists(input as string))) return 'File does not exist';
+                if (!(await fs.pathExists(input as string)))
+                  return 'File does not exist';
                 return true;
               },
             },
