@@ -43,3 +43,5 @@ Thumbs.db
 *.tmp
 .cache/
 .turbo/
+
+PRODUCTION_READY_REVIEW.md
