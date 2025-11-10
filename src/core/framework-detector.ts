@@ -1,6 +1,6 @@
 import path from 'path';
 
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 
 import { logInfo, logError } from '@/utils/logger';
 import type { PackageManager } from '@/utils/types';

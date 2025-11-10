@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import * as chalk from 'chalk';
 import type { Command } from 'commander';
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 import inquirer from 'inquirer';
 
 import { AIService } from '@/core/ai-service';

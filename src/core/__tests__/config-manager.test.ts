@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 import * as path from 'path';
 import { ConfigManager } from '../config-manager';
 import type { ProjectStructure } from '../framework-detector';
@@ -31,21 +31,28 @@ describe('ConfigManager', () => {
             modules: 'src/modules',
             shared: 'src/shared',
             tests: 'src/__tests__',
+            src: '',
+            components: ''
           },
           extensions: {
             component: '.tsx',
             service: '.ts',
             test: '.test.ts',
+            page: '',
+            api: ''
           },
           features: {
             routing: false,
             api: false,
             ssr: false,
+            typescript: false,
+            testing: false
           },
         },
         hasTypeScript: true,
         hasTesting: true,
         packageManager: 'npm',
+        rootDir: ''
       };
 
       const config = await configManager.initializeConfig(projectStructure);
@@ -73,21 +80,28 @@ describe('ConfigManager', () => {
             modules: 'src/modules',
             shared: 'src/shared',
             tests: 'src/__tests__',
+            src: '',
+            components: ''
           },
           extensions: {
             component: '.tsx',
             service: '.ts',
             test: '.test.ts',
+            page: '',
+            api: ''
           },
           features: {
             routing: false,
             api: false,
             ssr: false,
+            typescript: false,
+            testing: false
           },
         },
         hasTypeScript: true,
         hasTesting: true,
         packageManager: 'npm',
+        rootDir: ''
       };
 
       const config = await configManager.initializeConfig(projectStructure);
@@ -105,21 +119,28 @@ describe('ConfigManager', () => {
             modules: 'src/modules',
             shared: 'src/shared',
             tests: '__tests__',
+            src: '',
+            components: ''
           },
           extensions: {
             component: '.tsx',
             service: '.ts',
             test: '.test.tsx',
+            page: '',
+            api: ''
           },
           features: {
             routing: true,
             api: true,
             ssr: true,
+            typescript: false,
+            testing: false
           },
         },
         hasTypeScript: true,
         hasTesting: true,
         packageManager: 'npm',
+        rootDir: ''
       };
 
       await configManager.initializeConfig(projectStructure);
@@ -298,17 +319,28 @@ conventions:
             modules: 'src/modules',
             shared: 'src/shared',
             tests: 'tests',
+            src: '',
+            components: ''
           },
           extensions: {
             component: '.vue',
             service: '.ts',
             test: '.spec.ts',
+            page: '',
+            api: ''
           },
-          features: {},
+          features: {
+            routing: false,
+            api: false,
+            ssr: false,
+            typescript: false,
+            testing: false
+          },
         },
         hasTypeScript: false,
         hasTesting: false,
         packageManager: 'npm',
+        rootDir: ''
       };
 
       const config = await configManager.initializeConfig(projectStructure);

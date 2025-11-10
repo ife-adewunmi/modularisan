@@ -1,6 +1,6 @@
 import path from 'path';
 
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 
 import { ensureDirectoryExists } from '@/utils/file';
 import { logInfo, logError, logSuccess } from '@/utils/logger';

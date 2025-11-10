@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import * as chalk from 'chalk';
 import type { Command } from 'commander';
-import { existsSync, readFile } from 'fs-extra';
+import fs from 'fs-extra';
 import inquirer from 'inquirer';
 
 import { AIService } from '@/core/ai-service';
@@ -73,7 +73,7 @@ export function aiAnalyzeCommand(program: Command): void {
               message: 'Enter the path to the file you want to analyze:',
               validate: (input: string) => {
                 if (!input) return 'File path is required';
-                if (!existsSync(input)) return 'File does not exist';
+                if (!fs.existsSync(input)) return 'File does not exist';
                 return true;
               },
             },
@@ -119,7 +119,7 @@ export function aiAnalyzeCommand(program: Command): void {
         }
 
         // Read the file
-        const fileContent = await readFile(targetFile, 'utf-8');
+  const fileContent = await fs.readFile(targetFile, 'utf-8');
 
         logInfo(`Analyzing ${targetFile} using AI...`);
 

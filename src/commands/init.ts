@@ -2,7 +2,7 @@ import path from 'path';
 
 import chalk from 'chalk';
 import type { Command } from 'commander';
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 import inquirer from 'inquirer';
 
 import { ConfigManager } from '../core/config-manager';
