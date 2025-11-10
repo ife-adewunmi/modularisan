@@ -1,6 +1,15 @@
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
 import chalk from 'chalk';
 import { Command } from 'commander';
+import fs from 'fs-extra';
 import figlet from 'figlet';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJsonPath = join(__dirname, '../package.json');
+const packageJson = fs.readJsonSync(packageJsonPath);
 
 import { aiAnalyzeCommand } from './commands/ai-analyze';
 import { aiArchitectCommand } from './commands/ai-architect';
@@ -30,7 +39,7 @@ console.log(chalk.cyan('Framework-agnostic modular code generator\n'));
 const program = new Command();
 
 program
-  .version('2.0.0')
+  .version(packageJson.version)
   .description(
     'A framework-agnostic CLI tool for generating modular, scalable code structures'
   );
