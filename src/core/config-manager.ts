@@ -7,6 +7,7 @@ import { logInfo, logError, logSuccess } from '@/utils/logger';
 import type { PackageManager } from '@/utils/types';
 
 import type { ProjectStructure, FrameworkConfig } from './framework-detector';
+import { getPackageVersion } from '@/utils/version';
 
 export interface ModularisanConfig {
   version: string;
@@ -53,7 +54,7 @@ export interface ModularisanConfig {
 }
 
 const DEFAULT_CONFIG: Partial<ModularisanConfig> = {
-  version: '2.0.0',
+  version: getPackageVersion(),
   features: {
     typescript: true,
     testing: true,
