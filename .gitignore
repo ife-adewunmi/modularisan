@@ -44,4 +44,5 @@ Thumbs.db
 .cache/
 .turbo/
 
-PRODUCTION_READY_REVIEW.md
+# Production Markdown files
+.md/
