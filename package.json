@@ -1,6 +1,6 @@
 {
   "name": "modularisan",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "type": "module",
   "description": "A framework-agnostic CLI tool for generating modular, scalable code structures inspired by Laravel modules. Supports Next.js, Nuxt.js, Nest.js, and more.",
   "scripts": {

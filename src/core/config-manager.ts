@@ -5,9 +5,9 @@ import yaml from 'yaml';
 
 import { logInfo, logError, logSuccess } from '@/utils/logger';
 import type { PackageManager } from '@/utils/types';
+import { getPackageVersion } from '@/utils/version';
 
 import type { ProjectStructure, FrameworkConfig } from './framework-detector';
-import { getPackageVersion } from '@/utils/version';
 
 export interface ModularisanConfig {
   version: string;
