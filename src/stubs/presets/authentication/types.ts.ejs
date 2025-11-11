@@ -1,0 +1,44 @@
+export interface <%= pascalName %>User {
+  id: string;
+  email: string;
+  name: string;
+  role?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface <%= pascalName %>Session {
+  user: <%= pascalName %>User;
+  token: string;
+  refreshToken?: string;
+  expiresAt?: string;
+}
+
+export interface <%= pascalName %>AuthContext {
+  user: <%= pascalName %>User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
+  logout: () => Promise<void>;
+  refreshToken: () => Promise<boolean>;
+}
+
+export interface <%= pascalName %>LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface <%= pascalName %>RegisterRequest {
+  email: string;
+  password: string;
+  name: string;
+}
+
+export interface <%= pascalName %>AuthResponse {
+  success: boolean;
+  message?: string;
+  session?: <%= pascalName %>Session;
+  error?: string;
+}

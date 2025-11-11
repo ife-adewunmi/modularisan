@@ -1,0 +1,101 @@
+'use client'; // For Next.js
+
+import React from 'react';
+
+export interface <%= pascalName %>ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  isLoading?: boolean;
+}
+
+/**
+ * <%= name %> Button Component
+ *
+ * Accessible, customizable button with variants and sizes
+ */
+export function <%= pascalName %>Button(props: <%= pascalName %>ButtonProps) {
+  const { variant = 'primary', size = 'md', isLoading, disabled, children, ...rest } = props;
+
+  const getVariantStyles = () => {
+    const variants = {
+      primary: 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300',
+      secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 disabled:bg-gray-100',
+      danger: 'bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300',
+      ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 disabled:opacity-50',
+    };
+    return variants[variant] || variants.primary;
+  };
+
+  const getSizeStyles = () => {
+    const sizes = {
+      sm: 'px-3 py-1 text-sm',
+      md: 'px-4 py-2 text-base',
+      lg: 'px-6 py-3 text-lg',
+    };
+    return sizes[size] || sizes.md;
+  };
+
+  return (
+    <button
+      {...rest}
+      disabled={disabled || isLoading}
+      className={`
+        font-medium rounded transition-colors
+        ${getVariantStyles()}
+        ${getSizeStyles()}
+        ${isLoading ? 'opacity-75 cursor-wait' : 'cursor-pointer'}
+      `}
+    >
+      {isLoading ? 'Loading...' : children}
+    </button>
+  );
+}
+
+export interface <%= pascalName %>InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  error?: string;
+  helperText?: string;
+  fullWidth?: boolean;
+}
+
+/**
+ * <%= name %> Input Component
+ *
+ * Accessible input with label, error, and helper text support
+ */
+export function <%= pascalName %>Input(props: <%= pascalName %>InputProps) {
+  const { label, error, helperText, fullWidth, ...inputProps } = props;
+
+  return (
+    <div className={fullWidth ? 'w-full' : ''}>
+      {label && (
+        <label htmlFor={inputProps.id || inputProps.name} className="block text-sm font-medium mb-1">
+          {label}
+        </label>
+      )}
+      <input
+        {...inputProps}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${inputProps.name}-error` : helperText ? `${inputProps.name}-helper` : undefined}
+        className={`
+          w-full px-3 py-2 border rounded-md
+          focus:outline-none focus:ring-2 focus:ring-blue-500
+          ${error ? 'border-red-500' : 'border-gray-300'}
+          ${inputProps.className || ''}
+        `}
+      />
+      {error && (
+        <p id={`${inputProps.name}-error`} className="text-red-600 text-sm mt-1">
+          {error}
+        </p>
+      )}
+      {helperText && !error && (
+        <p id={`${inputProps.name}-helper`} className="text-gray-600 text-sm mt-1">
+          {helperText}
+        </p>
+      )}
+    </div>
+  );
+}

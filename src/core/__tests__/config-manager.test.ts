@@ -58,7 +58,7 @@ describe('ConfigManager', () => {
       const config = await configManager.initializeConfig(projectStructure);
 
       expect(config).toBeDefined();
-      expect(config.version).toBe('2.0.0');
+      expect(config.version).toBe('1.0.0-beta.1');
       expect(config.framework.name).toBe('React');
       expect(config.framework.type).toBe('frontend');
       expect(config.features.typescript).toBe(true);
@@ -155,7 +155,7 @@ describe('ConfigManager', () => {
     it('should load existing config file', async () => {
       const configPath = path.join(testDir, 'modularisan.config.yml');
       const mockConfig = `
-version: "2.0.0"
+version: "1.0.0-beta.1"
 framework:
   name: "React"
   type: "frontend"
@@ -187,7 +187,7 @@ conventions:
       const config = await configManager.loadConfig();
 
       expect(config).toBeDefined();
-      expect(config.version).toBe('2.0.0');
+      expect(config.version).toBe('1.0.0-beta.1');
       expect(config.framework.name).toBe('React');
       expect(config.project.name).toBe('test-project');
     });
@@ -204,7 +204,7 @@ conventions:
     it('should cache loaded config', async () => {
       const configPath = path.join(testDir, 'modularisan.config.yml');
       const mockConfig = `
-version: "2.0.0"
+version: "1.0.0-beta.1"
 framework:
   name: "React"
   type: "frontend"
@@ -299,7 +299,7 @@ conventions:
 
     it('should detect existing config file names', async () => {
       const altConfigPath = path.join(testDir, 'misan.config.yml');
-      await fs.writeFile(altConfigPath, 'version: "2.0.0"');
+      await fs.writeFile(altConfigPath, 'version: "1.0.0-beta.1"');
 
       // Create new instance to detect the file
       const newConfigManager = new ConfigManager(testDir);

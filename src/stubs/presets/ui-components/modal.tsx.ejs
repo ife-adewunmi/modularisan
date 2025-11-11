@@ -1,0 +1,99 @@
+'use client'; // For Next.js
+
+import React, { useEffect } from 'react';
+
+export interface <%= pascalName %>ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title?: string;
+  children: React.ReactNode;
+  footer?: React.ReactNode;
+  size?: 'sm' | 'md' | 'lg';
+  closeOnOverlayClick?: boolean;
+}
+
+/**
+ * <%= name %> Modal Component
+ *
+ * Accessible modal with keyboard support and overlay
+ */
+export function <%= pascalName %>Modal(props: <%= pascalName %>ModalProps) {
+  const {
+    isOpen,
+    onClose,
+    title,
+    children,
+    footer,
+    size = 'md',
+    closeOnOverlayClick = true,
+  } = props;
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  const getSizeClass = () => {
+    const sizes = {
+      sm: 'max-w-sm',
+      md: 'max-w-md',
+      lg: 'max-w-lg',
+    };
+    return sizes[size] || sizes.md;
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      role="presentation"
+      onClick={(e) => {
+        if (closeOnOverlayClick && e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true" />
+
+      <div
+        className={`relative bg-white rounded-lg shadow-xl w-full mx-4 ${getSizeClass()}`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? '<%= kebabName %>-modal-title' : undefined}
+      >
+        {title && (
+          <div className="flex items-center justify-between px-6 py-4 border-b">
+            <h2 id="<%= kebabName %>-modal-title" className="text-lg font-semibold">
+              {title}
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700"
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        <div className="px-6 py-4">{children}</div>
+
+        {footer && <div className="px-6 py-4 border-t flex justify-end gap-2">{footer}</div>}
+      </div>
+    </div>
+  );
+}

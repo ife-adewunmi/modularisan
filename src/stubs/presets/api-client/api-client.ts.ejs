@@ -1,0 +1,209 @@
+/**
+ * <%= name %> API Client
+ *
+ * Wrapper around fetch with interceptors, error handling, and retry logic
+ */
+
+export interface <%= pascalName %>APIConfig {
+  baseURL: string;
+  timeout?: number;
+  retries?: number;
+  headers?: Record<string, string>;
+}
+
+export interface <%= pascalName %>APIOptions extends RequestInit {
+  timeout?: number;
+  retries?: number;
+}
+
+export interface <%= pascalName %>APIError extends Error {
+  status?: number;
+  response?: Response;
+  data?: any;
+}
+
+export class <%= pascalName %>APIClient {
+  private baseURL: string;
+  private timeout: number;
+  private retries: number;
+  private defaultHeaders: Record<string, string>;
+  private requestInterceptors: ((config: any) => any)[] = [];
+  private responseInterceptors: ((response: Response) => Response)[] = [];
+  private errorInterceptors: ((error: <%= pascalName %>APIError) => <%= pascalName %>APIError)[] = [];
+
+  constructor(config: <%= pascalName %>APIConfig) {
+    this.baseURL = config.baseURL;
+    this.timeout = config.timeout ?? 30000;
+    this.retries = config.retries ?? 3;
+    this.defaultHeaders = {
+      'Content-Type': 'application/json',
+      ...config.headers,
+    };
+  }
+
+  /**
+   * Add request interceptor
+   */
+  addRequestInterceptor(interceptor: (config: any) => any): void {
+    this.requestInterceptors.push(interceptor);
+  }
+
+  /**
+   * Add response interceptor
+   */
+  addResponseInterceptor(interceptor: (response: Response) => Response): void {
+    this.responseInterceptors.push(interceptor);
+  }
+
+  /**
+   * Add error interceptor
+   */
+  addErrorInterceptor(interceptor: (error: <%= pascalName %>APIError) => <%= pascalName %>APIError): void {
+    this.errorInterceptors.push(interceptor);
+  }
+
+  /**
+   * GET request
+   */
+  async get<T = any>(url: string, options?: <%= pascalName %>APIOptions): Promise<T> {
+    return this.request<T>(url, { ...options, method: 'GET' });
+  }
+
+  /**
+   * POST request
+   */
+  async post<T = any>(url: string, body?: any, options?: <%= pascalName %>APIOptions): Promise<T> {
+    return this.request<T>(url, {
+      ...options,
+      method: 'POST',
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  }
+
+  /**
+   * PUT request
+   */
+  async put<T = any>(url: string, body?: any, options?: <%= pascalName %>APIOptions): Promise<T> {
+    return this.request<T>(url, {
+      ...options,
+      method: 'PUT',
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  }
+
+  /**
+   * PATCH request
+   */
+  async patch<T = any>(url: string, body?: any, options?: <%= pascalName %>APIOptions): Promise<T> {
+    return this.request<T>(url, {
+      ...options,
+      method: 'PATCH',
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  }
+
+  /**
+   * DELETE request
+   */
+  async delete<T = any>(url: string, options?: <%= pascalName %>APIOptions): Promise<T> {
+    return this.request<T>(url, { ...options, method: 'DELETE' });
+  }
+
+  /**
+   * Main request method with retries
+   */
+  private async request<T = any>(url: string, options: <%= pascalName %>APIOptions = {}): Promise<T> {
+    const maxRetries = options.retries ?? this.retries;
+    let lastError: <%= pascalName %>APIError | null = null;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        return await this.performRequest<T>(url, options);
+      } catch (error) {
+        lastError = error as <%= pascalName %>APIError;
+
+        // Don't retry on client errors (4xx) or last attempt
+        if ((lastError.status && lastError.status < 500) || attempt === maxRetries) {
+          throw this.applyErrorInterceptors(lastError);
+        }
+
+        // Exponential backoff
+        const delay = Math.pow(2, attempt) * 1000;
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
+
+    throw lastError;
+  }
+
+  /**
+   * Perform actual fetch request
+   */
+  private async performRequest<T = any>(url: string, options: <%= pascalName %>APIOptions): Promise<T> {
+    const fullURL = new URL(url.startsWith('http') ? url : `${this.baseURL}${url}`).href;
+
+    let requestConfig = {
+      ...options,
+      headers: {
+        ...this.defaultHeaders,
+        ...options.headers,
+      },
+    };
+
+    // Apply request interceptors
+    for (const interceptor of this.requestInterceptors) {
+      requestConfig = interceptor(requestConfig);
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), options.timeout ?? this.timeout);
+
+    try {
+      let response = await fetch(fullURL, {
+        ...requestConfig,
+        signal: controller.signal,
+      });
+
+      // Apply response interceptors
+      for (const interceptor of this.responseInterceptors) {
+        response = interceptor(response);
+      }
+
+      if (!response.ok) {
+        const error = new Error(`HTTP ${response.status}`) as <%= pascalName %>APIError;
+        error.status = response.status;
+        error.response = response;
+        try {
+          error.data = await response.json();
+        } catch {
+          error.data = await response.text();
+        }
+        throw error;
+      }
+
+      const data = await response.json();
+      return data as T;
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error('Request timeout') as <%= pascalName %>APIError;
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  /**
+   * Apply error interceptors
+   */
+  private applyErrorInterceptors(error: <%= pascalName %>APIError): <%= pascalName %>APIError {
+    for (const interceptor of this.errorInterceptors) {
+      error = interceptor(error);
+    }
+    return error;
+  }
+}
+
+export const create<%= pascalName %>APIClient = (config: <%= pascalName %>APIConfig) => {
+  return new <%= pascalName %>APIClient(config);
+};

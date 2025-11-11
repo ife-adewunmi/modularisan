@@ -1,0 +1,45 @@
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
+
+export interface <%= pascalName %>State {
+  // State
+  count: number;
+  // Actions
+  increment: () => void;
+  decrement: () => void;
+  reset: () => void;
+}
+
+/**
+ * <%= name %> Store using Zustand
+ *
+ * Features:
+ * - Redux DevTools integration
+ * - Persistence (localStorage)
+ * - TypeScript support
+ */
+export const use<%= pascalName %>Store = create<<%= pascalName %>State>()(
+  devtools(
+    persist(
+      (set) => ({
+        count: 0,
+        increment: () => set((state) => ({ count: state.count + 1 }), false, 'INCREMENT'),
+        decrement: () => set((state) => ({ count: state.count - 1 }), false, 'DECREMENT'),
+        reset: () => set({ count: 0 }, false, 'RESET'),
+      }),
+      {
+        name: '<%= kebabName %>-store',
+        storage: typeof window !== 'undefined' ? localStorage : undefined,
+      }
+    ),
+    {
+      name: '<%= pascalName %>Store',
+    }
+  )
+);
+
+// Selectors for better performance
+export const select<%= pascalName %>Count = (state: <%= pascalName %>State) => state.count;
+export const select<%= pascalName %>Increment = (state: <%= pascalName %>State) => state.increment;
+export const select<%= pascalName %>Decrement = (state: <%= pascalName %>State) => state.decrement;
+export const select<%= pascalName %>Reset = (state: <%= pascalName %>State) => state.reset;

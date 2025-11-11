@@ -27,6 +27,7 @@ export function createModuleCommand(program: Command): void {
       '--components <components>',
       'Comma-separated list of components to include'
     )
+    .option('--dry-run', 'Preview changes without creating files')
     .option('-y, --yes', 'Skip interactive prompts and use defaults')
     .action(async (name, options) => {
       try {
@@ -179,8 +180,11 @@ export function createModuleCommand(program: Command): void {
         }
 
         // Create module
-        const moduleService = new ModuleService(config);
-        const moduleStructure = await moduleService.createModule(moduleOptions);
+        const moduleService = new ModuleService(config, options.dryRun);
+        const moduleStructure = await moduleService.createModule({
+          ...moduleOptions,
+          dryRun: options.dryRun,
+        });
 
         // Success message
         logSuccess(`Module '${name}' created successfully!`);

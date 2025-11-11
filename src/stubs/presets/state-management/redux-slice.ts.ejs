@@ -1,0 +1,62 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+export interface <%= pascalName %>State {
+  count: number;
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: <%= pascalName %>State = {
+  count: 0,
+  loading: false,
+  error: null,
+};
+
+export const <%= camelName %>Slice = createSlice({
+  name: '<%= camelName %>',
+  initialState,
+  reducers: {
+    // Counter actions
+    increment: (state) => {
+      state.count += 1;
+    },
+    decrement: (state) => {
+      state.count -= 1;
+    },
+    incrementByAmount: (state, action: PayloadAction<number>) => {
+      state.count += action.payload;
+    },
+    decrementByAmount: (state, action: PayloadAction<number>) => {
+      state.count -= action.payload;
+    },
+    reset: (state) => {
+      state.count = 0;
+    },
+    // State management
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
+    },
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
+    },
+  },
+});
+
+// Actions
+export const {
+  increment,
+  decrement,
+  incrementByAmount,
+  decrementByAmount,
+  reset,
+  setLoading,
+  setError,
+} = <%= camelName %>Slice.actions;
+
+// Selectors
+export const select<%= pascalName %>Count = (state: { <%= camelName %>: <%= pascalName %>State }) => state.<%= camelName %>.count;
+export const select<%= pascalName %>Loading = (state: { <%= camelName %>: <%= pascalName %>State }) => state.<%= camelName %>.loading;
+export const select<%= pascalName %>Error = (state: { <%= camelName %>: <%= pascalName %>State }) => state.<%= camelName %>.error;
+
+// Reducer
+export default <%= camelName %>Slice.reducer;

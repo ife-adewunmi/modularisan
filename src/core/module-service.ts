@@ -32,6 +32,7 @@ export interface CreateModuleOptions {
   standalone?: boolean;
   packageJson?: boolean;
   template?: string;
+  dryRun?: boolean;
 }
 
 export interface CreateComponentOptions {
@@ -42,15 +43,22 @@ export interface CreateComponentOptions {
   client?: boolean;
   story?: boolean;
   test?: boolean;
+  dryRun?: boolean;
 }
 
 export class ModuleService {
   private config: ModularisanConfig;
   private rootDir: string;
+  private dryRun: boolean = false;
 
-  constructor(config: ModularisanConfig) {
+  constructor(config: ModularisanConfig, dryRun: boolean = false) {
     this.config = config;
     this.rootDir = config.project.rootDir;
+    this.dryRun = dryRun;
+  }
+
+  setDryRun(dryRun: boolean): void {
+    this.dryRun = dryRun;
   }
 
   async createModule(options: CreateModuleOptions): Promise<ModuleStructure> {
@@ -64,6 +72,7 @@ export class ModuleService {
       tests = this.config.features.testing,
       standalone = this.config.features.standalone_modules,
       packageJson = this.config.features.package_per_module,
+      dryRun = this.dryRun,
     } = options;
 
     // Validate module name
@@ -83,10 +92,18 @@ export class ModuleService {
       throw new Error(`Module '${name}' already exists at ${modulePath}`);
     }
 
-    logInfo(`Creating module: ${name}`);
+    if (dryRun) {
+      logInfo(`[DRY RUN] Would create module: ${name} at ${modulePath}`);
+    } else {
+      logInfo(`Creating module: ${name}`);
+    }
 
     // Create module directory
-    await ensureDirectoryExists(modulePath);
+    if (dryRun) {
+      logInfo(`[DRY RUN] Would create directory: ${modulePath}`);
+    } else {
+      await ensureDirectoryExists(modulePath);
+    }
 
     // Create module structure
     const moduleStructure: ModuleStructure = {
@@ -101,32 +118,36 @@ export class ModuleService {
     };
 
     // Create subdirectories
-    await this.createModuleDirectories(moduleStructure);
+    await this.createModuleDirectories(moduleStructure, dryRun);
 
     // Create module files
-    await this.createModuleFiles(moduleStructure, description);
+    await this.createModuleFiles(moduleStructure, description, dryRun);
 
     // Create package.json if requested
     if (packageJson) {
-      await this.createModulePackageJson(moduleStructure, description);
+      await this.createModulePackageJson(moduleStructure, description, dryRun);
     }
 
     // Create routing files if requested
     if (routing && this.config.framework.type !== 'backend') {
-      await this.createRoutingFiles(moduleStructure);
+      await this.createRoutingFiles(moduleStructure, dryRun);
     }
 
     // Create API files if requested
     if (api && this.config.framework.features?.api) {
-      await this.createApiFiles(moduleStructure);
+      await this.createApiFiles(moduleStructure, dryRun);
     }
 
     // Create test files if requested
     if (tests) {
-      await this.createTestFiles(moduleStructure);
+      await this.createTestFiles(moduleStructure, dryRun);
     }
 
-    logSuccess(`Module '${name}' created successfully at ${modulePath}`);
+    if (dryRun) {
+      logSuccess(`[DRY RUN] Module '${name}' would be created at ${modulePath}`);
+    } else {
+      logSuccess(`Module '${name}' created successfully at ${modulePath}`);
+    }
     return moduleStructure;
   }
 
@@ -268,70 +289,118 @@ export class ModuleService {
   }
 
   private async createModuleDirectories(
-    moduleStructure: ModuleStructure
+    moduleStructure: ModuleStructure,
+    dryRun: boolean = false
   ): Promise<void> {
     const { path: modulePath, components } = moduleStructure;
 
     // Create component directories
     for (const component of components) {
-      await ensureDirectoryExists(path.join(modulePath, component));
-      logInfo(`Creating ${component} directory`);
+      const dirPath = path.join(modulePath, component);
+      if (dryRun) {
+        logInfo(`[DRY RUN] Would create ${component} directory at ${dirPath}`);
+      } else {
+        await ensureDirectoryExists(dirPath);
+        logInfo(`Creating ${component} directory`);
+      }
     }
 
     // Create additional directories based on features
     if (moduleStructure.hasRouting) {
-      await ensureDirectoryExists(path.join(modulePath, 'pages'));
-      await ensureDirectoryExists(path.join(modulePath, 'routes'));
+      const pagesPath = path.join(modulePath, 'pages');
+      const routesPath = path.join(modulePath, 'routes');
+      if (dryRun) {
+        logInfo(`[DRY RUN] Would create pages directory at ${pagesPath}`);
+        logInfo(`[DRY RUN] Would create routes directory at ${routesPath}`);
+      } else {
+        await ensureDirectoryExists(pagesPath);
+        await ensureDirectoryExists(routesPath);
+      }
     }
 
     if (moduleStructure.hasApi) {
-      await ensureDirectoryExists(path.join(modulePath, 'api'));
-      await ensureDirectoryExists(path.join(modulePath, 'controllers'));
+      const apiPath = path.join(modulePath, 'api');
+      const controllersPath = path.join(modulePath, 'controllers');
+      if (dryRun) {
+        logInfo(`[DRY RUN] Would create api directory at ${apiPath}`);
+        logInfo(`[DRY RUN] Would create controllers directory at ${controllersPath}`);
+      } else {
+        await ensureDirectoryExists(apiPath);
+        await ensureDirectoryExists(controllersPath);
+      }
     }
 
     if (moduleStructure.hasTests) {
-      await ensureDirectoryExists(path.join(modulePath, 'tests'));
+      const testsPath = path.join(modulePath, 'tests');
+      if (dryRun) {
+        logInfo(`[DRY RUN] Would create tests directory at ${testsPath}`);
+      } else {
+        await ensureDirectoryExists(testsPath);
+      }
     }
   }
 
   private async createModuleFiles(
     moduleStructure: ModuleStructure,
-    description: string
+    description: string,
+    dryRun: boolean = false
   ): Promise<void> {
     const { name, path: modulePath } = moduleStructure;
 
     // Create module index file
-    const indexContent = await renderTemplate(
-      `${this.config.templates.module}/index${this.config.conventions.file_extensions.component}`,
-      { name, description, components: moduleStructure.components }
-    );
-
     const indexFile = `index${this.config.conventions.file_extensions.component}`;
-    await fs.writeFile(path.join(modulePath, indexFile), indexContent);
+    const indexPath = path.join(modulePath, indexFile);
+
+    if (dryRun) {
+      logInfo(`[DRY RUN] Would create module index file at ${indexPath}`);
+    } else {
+      const indexContent = await renderTemplate(
+        `${this.config.templates.module}/index${this.config.conventions.file_extensions.component}`,
+        { name, description, components: moduleStructure.components }
+      );
+      await fs.writeFile(indexPath, indexContent);
+    }
 
     // Create README.md
-    const readmeContent = await renderTemplate('common/module-readme.ejs', {
-      name,
-      description,
-      components: moduleStructure.components,
-    });
-    await fs.writeFile(path.join(modulePath, 'README.md'), readmeContent);
+    const readmePath = path.join(modulePath, 'README.md');
+    if (dryRun) {
+      logInfo(`[DRY RUN] Would create README.md at ${readmePath}`);
+    } else {
+      const readmeContent = await renderTemplate('common/module-readme.ejs', {
+        name,
+        description,
+        components: moduleStructure.components,
+      });
+      await fs.writeFile(readmePath, readmeContent);
+    }
 
     // Create component index files
     for (const component of moduleStructure.components) {
       const componentIndexPath = path.join(modulePath, component, 'index.ts');
-      await fs.writeFile(
-        componentIndexPath,
-        `// Export all ${component} from this directory\n`
-      );
+      if (dryRun) {
+        logInfo(`[DRY RUN] Would create ${component} index file at ${componentIndexPath}`);
+      } else {
+        await fs.writeFile(
+          componentIndexPath,
+          `// Export all ${component} from this directory\n`
+        );
+      }
     }
   }
 
   private async createModulePackageJson(
     moduleStructure: ModuleStructure,
-    description: string
+    description: string,
+    dryRun: boolean = false
   ): Promise<void> {
     const { name, path: modulePath } = moduleStructure;
+
+    const packageJsonPath = path.join(modulePath, 'package.json');
+
+    if (dryRun) {
+      logInfo(`[DRY RUN] Would create package.json at ${packageJsonPath}`);
+      return;
+    }
 
     const packageJson = {
       name: `@${this.config.project.name}/${name}`,
@@ -358,30 +427,46 @@ export class ModuleService {
       },
     };
 
-    await fs.writeJson(path.join(modulePath, 'package.json'), packageJson, {
+    await fs.writeJson(packageJsonPath, packageJson, {
       spaces: 2,
     });
   }
 
   private async createRoutingFiles(
-    _moduleStructure: ModuleStructure
+    _moduleStructure: ModuleStructure,
+    dryRun: boolean = false
   ): Promise<void> {
     // Implementation depends on framework
     // This is a placeholder - you'd implement framework-specific routing
+    if (dryRun) {
+      logInfo(`[DRY RUN] Would create routing files`);
+    }
   }
 
   private async createApiFiles(
-    _moduleStructure: ModuleStructure
+    _moduleStructure: ModuleStructure,
+    dryRun: boolean = false
   ): Promise<void> {
     // Implementation depends on framework
     // This is a placeholder - you'd implement framework-specific API files
+    if (dryRun) {
+      logInfo(`[DRY RUN] Would create API files`);
+    }
   }
 
   private async createTestFiles(
-    moduleStructure: ModuleStructure
+    moduleStructure: ModuleStructure,
+    dryRun: boolean = false
   ): Promise<void> {
     const { path: modulePath } = moduleStructure;
     const testsDir = path.join(modulePath, 'tests');
+    const testFile = `${moduleStructure.name}${this.config.conventions.file_extensions.test}`;
+    const testPath = path.join(testsDir, testFile);
+
+    if (dryRun) {
+      logInfo(`[DRY RUN] Would create test file at ${testPath}`);
+      return;
+    }
 
     // Create basic test file
     const testContent = await renderTemplate(
@@ -389,8 +474,7 @@ export class ModuleService {
       { moduleName: moduleStructure.name }
     );
 
-    const testFile = `${moduleStructure.name}${this.config.conventions.file_extensions.test}`;
-    await fs.writeFile(path.join(testsDir, testFile), testContent);
+    await fs.writeFile(testPath, testContent);
   }
 
   private async createComponentFile(
@@ -496,7 +580,7 @@ export class ModuleService {
     }
   }
 
-  private async findModulePath(moduleName: string): Promise<string | null> {
+  async findModulePath(moduleName: string): Promise<string | null> {
     const modulesPath = path.join(this.rootDir, this.config.paths.modules);
     const modulePath = path.join(modulesPath, moduleName);
 

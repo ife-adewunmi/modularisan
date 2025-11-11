@@ -1,0 +1,60 @@
+'use client'; // For Next.js
+
+import React from 'react';
+
+export interface <%= pascalName %>FormProps {
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  isSubmitting: boolean;
+  children: React.ReactNode;
+  className?: string;
+}
+
+export function <%= pascalName %>Form({
+  onSubmit,
+  isSubmitting,
+  children,
+  className,
+}: <%= pascalName %>FormProps) {
+  return (
+    <form onSubmit={onSubmit} className={className} noValidate>
+      {children}
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? 'Submitting...' : 'Submit'}
+      </button>
+    </form>
+  );
+}
+
+export interface <%= pascalName %>FormInputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  error?: string;
+  touched?: boolean;
+  helperText?: string;
+}
+
+export function <%= pascalName %>FormInput(props: <%= pascalName %>FormInputProps) {
+  const { label, error, touched, helperText, ...inputProps } = props;
+  const hasError = touched && error;
+
+  return (
+    <div style={{ marginBottom: 16 }}>
+      {label && <label htmlFor={inputProps.name}>{label}</label>}
+      <input
+        {...inputProps}
+        aria-invalid={hasError}
+        aria-describedby={error ? `${inputProps.name}-error` : helperText ? `${inputProps.name}-helper` : undefined}
+      />
+      {hasError && (
+        <span id={`${inputProps.name}-error`} style={{ color: 'red', fontSize: '0.875rem' }}>
+          {error}
+        </span>
+      )}
+      {helperText && (
+        <span id={`${inputProps.name}-helper`} style={{ color: '#666', fontSize: '0.875rem' }}>
+          {helperText}
+        </span>
+      )}
+    </div>
+  );
+}

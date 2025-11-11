@@ -1,0 +1,160 @@
+import type { <%= pascalName %>Session, <%= pascalName %>User } from '../types';
+
+/**
+ * <%= name %> Authentication Service
+ *
+ * Handles user authentication including login, registration, and session management
+ */
+export class <%= pascalName %>Service {
+  private session: <%= pascalName %>Session | null = null;
+  private sessionStorageKey = '<%= kebabName %>_session';
+
+  /**
+   * Initialize from stored session
+   */
+  async initialize(): Promise<void> {
+    try {
+      const stored = localStorage.getItem(this.sessionStorageKey);
+      if (stored) {
+        this.session = JSON.parse(stored);
+      }
+    } catch (error) {
+      console.error('Failed to initialize session:', error);
+    }
+  }
+
+  /**
+   * Login user
+   */
+  async login(email: string, password: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      // TODO: Implement actual API call
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        return { success: false, error: data.message || 'Login failed' };
+      }
+
+      const data = await response.json();
+      this.setSession(data.session);
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: (error as Error).message };
+    }
+  }
+
+  /**
+   * Register new user
+   */
+  async register(
+    email: string,
+    password: string,
+    name: string
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      // TODO: Implement actual API call
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, name }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        return { success: false, error: data.message || 'Registration failed' };
+      }
+
+      const data = await response.json();
+      this.setSession(data.session);
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: (error as Error).message };
+    }
+  }
+
+  /**
+   * Logout user
+   */
+  async logout(): Promise<void> {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      this.clearSession();
+    }
+  }
+
+  /**
+   * Get current session
+   */
+  getSession(): <%= pascalName %>Session | null {
+    return this.session;
+  }
+
+  /**
+   * Check if user is authenticated
+   */
+  isAuthenticated(): boolean {
+    return this.session !== null && !this.isSessionExpired();
+  }
+
+  /**
+   * Get current user
+   */
+  getCurrentUser(): <%= pascalName %>User | null {
+    return this.session?.user || null;
+  }
+
+  /**
+   * Refresh token (for JWT)
+   */
+  async refreshToken(): Promise<boolean> {
+    try {
+      const response = await fetch('/api/auth/refresh', { method: 'POST' });
+      if (response.ok) {
+        const data = await response.json();
+        this.setSession(data.session);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Set session
+   */
+  private setSession(session: <%= pascalName %>Session): void {
+    this.session = session;
+    localStorage.setItem(this.sessionStorageKey, JSON.stringify(session));
+  }
+
+  /**
+   * Clear session
+   */
+  private clearSession(): void {
+    this.session = null;
+    localStorage.removeItem(this.sessionStorageKey);
+  }
+
+  /**
+   * Check if session is expired
+   */
+  private isSessionExpired(): boolean {
+    if (!this.session?.expiresAt) return false;
+    return new Date() > new Date(this.session.expiresAt);
+  }
+}
+
+/**
+ * Singleton instance
+ */
+export const authService = new <%= pascalName %>Service();

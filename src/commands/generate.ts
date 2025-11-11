@@ -18,6 +18,7 @@ export function generateCommand(program: Command): void {
     .option('--template <template>', 'Use specific template')
     .option('--module <module>', 'Target module for generation')
     .option('--name <name>', 'Name for generated item')
+    .option('--dry-run', 'Preview changes without creating files')
     .option('-y, --yes', 'Skip interactive prompts and use defaults')
     .action(async (type, options) => {
       try {
@@ -265,9 +266,6 @@ async function generateAIComponent(config: any, options: any): Promise<void> {
     });
 
     console.log(chalk.green('✨ Component generated successfully!'));
-    console.log('\n' + chalk.cyan('Generated Code:'));
-    console.log(chalk.gray(aiResponse.code));
-
     console.log('\n' + chalk.cyan('AI Explanation:'));
     console.log(aiResponse.explanation);
 
@@ -285,8 +283,37 @@ async function generateAIComponent(config: any, options: any): Promise<void> {
       });
     }
 
-    // TODO: Save the generated code to the file system
-    logInfo('Code generation completed. Manual file creation needed.');
+    // Save the generated code to the file system
+    const path = await import('path');
+    const componentName = options.name || answers.name;
+    const moduleName = options.module || answers.module;
+
+    // Find module path
+    const moduleService = new ModuleService(config);
+    const modulePath = await moduleService.findModulePath(moduleName);
+
+    if (!modulePath) {
+      logError(`Module '${moduleName}' not found. Cannot save generated code.`);
+      console.log('\n' + chalk.cyan('Generated Code:'));
+      console.log(chalk.gray(aiResponse.code));
+      return;
+    }
+
+    const componentDir = path.join(modulePath, 'components');
+    const componentFileName = `${componentName}${config.conventions.file_extensions.component}`;
+
+    await aiService.saveGeneratedCode(
+      aiResponse,
+      componentDir,
+      componentFileName,
+      options.dryRun
+    );
+
+    if (options.dryRun) {
+      logSuccess(`[DRY RUN] Component '${componentName}' would be created in module '${moduleName}'!`);
+    } else {
+      logSuccess(`Component '${componentName}' created successfully in module '${moduleName}'!`);
+    }
   } catch (error) {
     logError(`AI generation failed: ${(error as Error).message}`);
     logInfo('Falling back to template generation...');
@@ -409,9 +436,6 @@ async function generateService(
         });
 
         console.log(chalk.green('✨ Service generated successfully!'));
-        console.log('\n' + chalk.cyan('Generated Code:'));
-        console.log(chalk.gray(aiResponse.code));
-
         console.log('\n' + chalk.cyan('AI Explanation:'));
         console.log(aiResponse.explanation);
 
@@ -422,8 +446,37 @@ async function generateService(
           });
         }
 
-        // TODO: Save the generated code to the file system
-        logInfo('Code generation completed. Manual file creation needed.');
+        // Save the generated code to the file system
+        const path = await import('path');
+        const serviceName = options.name || answers.name;
+        const moduleName = options.module || answers.module;
+
+        // Find module path
+        const moduleService = new ModuleService(config);
+        const modulePath = await moduleService['findModulePath'](moduleName);
+
+        if (!modulePath) {
+          logError(`Module '${moduleName}' not found. Cannot save generated code.`);
+          console.log('\n' + chalk.cyan('Generated Code:'));
+          console.log(chalk.gray(aiResponse.code));
+          return;
+        }
+
+        const servicesDir = path.join(modulePath, 'services');
+        const serviceFileName = `${serviceName}${config.conventions.file_extensions.service}`;
+
+        await aiService.saveGeneratedCode(
+          aiResponse,
+          servicesDir,
+          serviceFileName,
+          options.dryRun
+        );
+
+        if (options.dryRun) {
+          logSuccess(`[DRY RUN] Service '${serviceName}' would be created in module '${moduleName}'!`);
+        } else {
+          logSuccess(`Service '${serviceName}' created successfully in module '${moduleName}'!`);
+        }
         return;
       } catch (error) {
         logError(`AI generation failed: ${(error as Error).message}`);

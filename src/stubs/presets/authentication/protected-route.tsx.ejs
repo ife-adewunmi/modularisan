@@ -1,0 +1,43 @@
+'use client'; // For Next.js
+
+import React from 'react';
+import { use<%= pascalName %>Auth } from '../context/<%= kebabName %>-provider';
+
+export interface <%= pascalName %>ProtectedProps {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}
+
+/**
+ * Protected Route Component
+ * Renders children only if user is authenticated
+ */
+export function <%= pascalName %>Protected({ children, fallback }: <%= pascalName %>ProtectedProps) {
+  const { isAuthenticated, isLoading } = use<%= pascalName %>Auth();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return fallback || <div>Access denied. Please login.</div>;
+  }
+
+  return <>{children}</>;
+}
+
+/**
+ * HOC for protecting components
+ */
+export function with<%= pascalName %>Protection<P extends object>(
+  Component: React.ComponentType<P>
+): React.ComponentType<P & <%= pascalName %>ProtectedProps> {
+  return function ProtectedComponent(props: P & <%= pascalName %>ProtectedProps) {
+    const { children, fallback, ...rest } = props;
+    return (
+      <<%= pascalName %>Protected fallback={fallback}>
+        <Component {...(rest as P)} />
+      </<%= pascalName %>Protected>
+    );
+  };
+}

@@ -1,6 +1,6 @@
 import { AnthropicProvider } from '@/providers/anthropic-provider';
 import { OpenAIProvider } from '@/providers/openai-provider';
-import { logError, logInfo } from '@/utils/logger';
+import { logError, logInfo, logSuccess } from '@/utils/logger';
 import type { Levels } from '@/utils/types';
 
 import type { ModularisanConfig } from './config-manager';
@@ -359,5 +359,86 @@ Please provide:
 6. README documentation
 7. Test file structure
 8. Dependencies and imports`;
+  }
+
+  /**
+   * Save AI-generated code to the file system
+   */
+  async saveGeneratedCode(
+    response: AIResponse,
+    targetPath: string,
+    fileName: string,
+    dryRun: boolean = false
+  ): Promise<void> {
+    const fs = await import('fs-extra');
+    const path = await import('path');
+
+    const filePath = path.join(targetPath, fileName);
+
+    if (dryRun) {
+      logInfo(`[DRY RUN] Would create directory: ${targetPath}`);
+      logInfo(`[DRY RUN] Would save code to: ${filePath}`);
+
+      if (response.tests) {
+        const testFileName = fileName.replace(/\.(tsx?|jsx?)$/, '.test$1');
+        const testFilePath = path.join(targetPath, testFileName);
+        logInfo(`[DRY RUN] Would save test file to: ${testFilePath}`);
+      }
+
+      if (response.documentation) {
+        const docFileName = fileName.replace(/\.(tsx?|jsx?)$/, '.md');
+        const docFilePath = path.join(targetPath, docFileName);
+        logInfo(`[DRY RUN] Would save documentation to: ${docFilePath}`);
+      }
+
+      return;
+    }
+
+    // Ensure directory exists
+    await fs.ensureDir(targetPath);
+
+    // Save the main code file
+    await fs.writeFile(filePath, response.code);
+    logSuccess(`Code saved to: ${filePath}`);
+
+    // Save test file if provided
+    if (response.tests) {
+      const testFileName = fileName.replace(/(\.(tsx?|jsx?))$/, '.test$1');
+      const testFilePath = path.join(targetPath, testFileName);
+      await fs.writeFile(testFilePath, response.tests);
+      logSuccess(`Test file saved to: ${testFilePath}`);
+    }
+
+    // Save documentation if provided
+    if (response.documentation) {
+      const docFileName = fileName.replace(/(\.(tsx?|jsx?))$/, '.md');
+      const docFilePath = path.join(targetPath, docFileName);
+      await fs.writeFile(docFilePath, response.documentation);
+      logSuccess(`Documentation saved to: ${docFilePath}`);
+    }
+  }
+
+  /**
+   * Estimate cost of AI API call based on prompt length
+   */
+  async estimateCost(prompt: string, provider?: string): Promise<number> {
+    const providerName = provider || this.config.ai?.provider || 'openai';
+
+    // Rough token estimation: ~4 characters per token
+    const estimatedTokens = Math.ceil(prompt.length / 4);
+
+    // Cost per 1K tokens (approximate, as of 2024)
+    const costPer1K: Record<string, { input: number; output: number }> = {
+      openai: { input: 0.01, output: 0.03 }, // GPT-4 pricing
+      anthropic: { input: 0.008, output: 0.024 }, // Claude 3 pricing
+    };
+
+    const pricing = costPer1K[providerName.toLowerCase()] ?? costPer1K.openai;
+
+    // Estimate input + output tokens (assume output is 2x input)
+    const inputCost = (estimatedTokens / 1000) * pricing!.input;
+    const outputCost = ((estimatedTokens * 2) / 1000) * pricing!.output;
+
+    return Number((inputCost + outputCost).toFixed(4));
   }
 }
