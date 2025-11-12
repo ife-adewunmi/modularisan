@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import * as path from 'path';
 import { ConfigManager } from '../config-manager';
 import type { ProjectStructure } from '../framework-detector';
+import { getPackageVersion } from '../../utils/version';
 
 describe('ConfigManager', () => {
   const testDir = path.join(__dirname, 'test-fixtures-config');
@@ -56,9 +57,10 @@ describe('ConfigManager', () => {
       };
 
       const config = await configManager.initializeConfig(projectStructure);
+      const expectedConfigVersion = getPackageVersion();
 
       expect(config).toBeDefined();
-      expect(config.version).toBe('1.0.0-beta.1');
+      expect(config.version).toBe(expectedConfigVersion);
       expect(config.framework.name).toBe('React');
       expect(config.framework.type).toBe('frontend');
       expect(config.features.typescript).toBe(true);

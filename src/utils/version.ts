@@ -12,6 +12,6 @@ export const getPackageVersion = (): string => {
     const packageJson = fs.readJsonSync(packageJsonPath);
     return packageJson.version;
   } catch (error) {
-    return '1.0.0-beta.1'; // Fallback version
+    return '1.0.0-beta.2'; // Fallback version
   }
 };
